@@ -3,7 +3,7 @@ from torch.nn import functional as F
 from torch.nn import Parameter
 
 from torch_geometric.nn.inits import glorot, zeros
-from torch import autograd
+
 
 class BaseRecsysModel(torch.nn.Module):
     def __init__(self, **kwargs):
@@ -33,9 +33,6 @@ class GraphRecsysModel(torch.nn.Module):
         self._init(**kwargs)
 
         self.reset_parameters()
-        
-        self.ewc_lambda = 80.0
-        self.ewc_type = 'ewc'
 
     def _init(self, **kwargs):
         raise NotImplementedError
@@ -43,7 +40,7 @@ class GraphRecsysModel(torch.nn.Module):
     def reset_parameters(self):
         raise NotImplementedError
 
-    def real_loss(self, pos_neg_pair_t):
+    def loss(self, pos_neg_pair_t):
         if self.training:
             self.cached_repr = self.forward()
         pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
@@ -97,53 +94,6 @@ class GraphRecsysModel(torch.nn.Module):
             else:
                 with torch.no_grad():
                     self.cached_repr = self.forward()
-
-    def _update_mean_params(self):
-        for param_name, param in self.named_parameters():
-            _buff_param_name = param_name.replace('.', '__')
-            self.register_buffer(_buff_param_name + '_estimated_mean', param.data.clone())
-
-    def _update_fisher_params(self, pos_neg_pair_t):
-        log_likelihood = self.real_loss(pos_neg_pair_t)
-        grad_log_liklihood = autograd.grad(log_likelihood, self.parameters())
-        _buff_param_names = [param[0].replace('.', '__') for param in self.named_parameters()]
-        for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
-            self.register_buffer(_buff_param_name + '_estimated_fisher', param.data.clone() ** 2)
-
-    def _save_fisher_params(self):
-        for param_name, param in self.named_parameters():
-            _buff_param_name = param_name.replace('.', '__')
-            estimated_mean = getattr(self, '{}_estimated_mean'.format(_buff_param_name))
-            estimated_fisher = np.array(getattr(self, '{}_estimated_fisher'.format(_buff_param_name)))
-            np.savetxt('estimated_mean', estimated_mean)
-            np.savetxt('estimated_fisher', estimated_fisher)
-            print(np.mean(estimated_fisher), np.max(estimated_fisher), np.min(estimated_fisher))
-            break
-
-
-    def register_ewc_params(self, pos_neg_pair_t):
-        self._update_fisher_params(pos_neg_pair_t)
-        self._update_mean_params()
-
-    def _compute_consolidation_loss(self):
-        losses = []
-        for param_name, param in self.named_parameters():
-            _buff_param_name = param_name.replace('.', '__')
-            estimated_mean = getattr(self, '{}_estimated_mean'.format(_buff_param_name))
-            estimated_fisher = getattr(self, '{}_estimated_fisher'.format(_buff_param_name))
-            if self.ewc_type == 'l2':
-                losses.append((10e-6 * (param - estimated_mean) ** 2).sum())
-            else:
-                losses.append((estimated_fisher * (param - estimated_mean) ** 2).sum())
-        return 1 * (self.ewc_lambda / 2) * sum(losses)
-
-    def loss(self, pos_neg_pair_t):
-        loss1 = self.real_loss(pos_neg_pair_t)
-        # TODO: move to the right place
-        # self.register_ewc_params(pos_neg_pair_t)
-        loss2 = self._compute_consolidation_loss()
-        loss = loss1 + loss2
-        return loss
 
 class MFRecsysModel(torch.nn.Module):
     def __init__(self, **kwargs):
