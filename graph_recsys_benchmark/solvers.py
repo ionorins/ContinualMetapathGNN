@@ -113,6 +113,8 @@ class BaseSolver(object):
 
         # Create the dataset
         dataset = load_dataset(self.dataset_args)
+        print(dataset[:10])
+        exit()
 
         logger_file_path = os.path.join(global_logger_path, 'logger_file.txt')
         with open(logger_file_path, 'a') as logger_file:
