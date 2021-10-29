@@ -194,8 +194,7 @@ class BaseSolver(object):
                             loss_per_batch = []
                             model.train()
                             dataset.cf_negative_sampling()
-                            print(dataset[:10])
-                            exit()
+                            
                             train_dataloader = DataLoader(
                                 dataset,
                                 shuffle=True,
