@@ -117,6 +117,9 @@ class GraphRecsysModel(torch.nn.Module):
         _buff_param_names = [param[0].replace(
             '.', '__') for param in self.named_parameters()]
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
+            if param is None:
+                continue
+            print('eh?')
             self.register_buffer(_buff_param_name +
                                  '_estimated_fisher', param.data.clone() ** 2)
 
