@@ -125,6 +125,7 @@ class GraphRecsysModel(torch.nn.Module):
 
     def _save_fisher_params(self):
         for param_name, param in self.named_parameters():
+            print('param_name:', param_name)
             _buff_param_name = param_name.replace('.', '__')
             estimated_mean = getattr(
                 self, '{}_estimated_mean'.format(_buff_param_name))
