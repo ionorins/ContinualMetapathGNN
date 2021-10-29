@@ -255,6 +255,7 @@ class BaseSolver(object):
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
+                                model.register_ewc_params(dataset.train_data)
                                 # Sumarize the epoch
                                 HRs_per_epoch_np = np.vstack([HRs_per_epoch_np, HRs])
                                 NDCGs_per_epoch_np = np.vstack([NDCGs_per_epoch_np, NDCGs])
