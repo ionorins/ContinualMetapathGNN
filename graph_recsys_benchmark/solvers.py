@@ -198,6 +198,7 @@ class BaseSolver(object):
                                 loss_per_batch = []
                                 model.train()
                                 dataset.cf_negative_sampling()
+                                print(dataset.train_data)
                                 
                                 train_dataloader = DataLoader(
                                     dataset,
@@ -420,4 +421,4 @@ class BaseSolver(object):
                 )
                 instantwrite(logger_file)
 
-        torch.save(model, 'model.pth')
+            torch.save(model, 'model.pth')

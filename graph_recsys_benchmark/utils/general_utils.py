@@ -85,21 +85,21 @@ def save_random_walk_model(file_path, model, optim, train_loss, silent=False):
 
 
 def load_model(file_path, model, optim, device):
-    if os.path.isfile(file_path):
-        checkpoint = torch.load(file_path, map_location=device)
-        epoch = checkpoint['epoch']
-        model.load_state_dict(checkpoint['model_states']['model'])
-        optim.load_state_dict(checkpoint['optim_states']['optim'])
-        rec_metrics = checkpoint['rec_metrics']
-        for state in optim.state.values():
-            for k, v in state.items():
-                if isinstance(v, torch.Tensor):
-                    state[k] = v.to(device)
-        print("Loaded checkpoint_backup '{}'".format(file_path))
-    else:
-        print("No checkpoint_backup found at '{}'".format(file_path))
-        epoch = 0
-        rec_metrics = np.zeros((0, 16)), np.zeros((0, 16)), np.zeros((0, 1)), np.zeros((0, 1)), np.zeros((0, 1))
+    # if os.path.isfile(file_path):
+    #     checkpoint = torch.load(file_path, map_location=device)
+    #     epoch = checkpoint['epoch']
+    #     model.load_state_dict(checkpoint['model_states']['model'])
+    #     optim.load_state_dict(checkpoint['optim_states']['optim'])
+    #     rec_metrics = checkpoint['rec_metrics']
+    #     for state in optim.state.values():
+    #         for k, v in state.items():
+    #             if isinstance(v, torch.Tensor):
+    #                 state[k] = v.to(device)
+    #     print("Loaded checkpoint_backup '{}'".format(file_path))
+    # else:
+    print("No checkpoint_backup found at '{}'".format(file_path))
+    epoch = 0
+    rec_metrics = np.zeros((0, 16)), np.zeros((0, 16)), np.zeros((0, 1)), np.zeros((0, 1)), np.zeros((0, 1))
 
     return model, optim, epoch, rec_metrics
 
