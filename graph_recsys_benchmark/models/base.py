@@ -1,8 +1,10 @@
 import torch
 from torch.nn import functional as F
 from torch.nn import Parameter
+import numpy as np
 
 from torch_geometric.nn.inits import glorot, zeros
+from torch import autograd
 
 
 class BaseRecsysModel(torch.nn.Module):
@@ -34,13 +36,16 @@ class GraphRecsysModel(torch.nn.Module):
 
         self.reset_parameters()
 
+        self.ewc_type = kwargs.get('ewc_type', 'ewc')
+        self.ewc_lambda = kwargs.get('ewc_lambda', 0)
+
     def _init(self, **kwargs):
         raise NotImplementedError
 
     def reset_parameters(self):
         raise NotImplementedError
 
-    def loss(self, pos_neg_pair_t):
+    def real_loss(self, pos_neg_pair_t):
         if self.training:
             self.cached_repr = self.forward()
         pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
@@ -48,28 +53,33 @@ class GraphRecsysModel(torch.nn.Module):
         cf_loss = -(pos_pred - neg_pred).sigmoid().log().sum()
 
         if self.entity_aware and self.training:
-            pos_item_entity, neg_item_entity = pos_neg_pair_t[:, 3], pos_neg_pair_t[:, 4]
-            pos_user_entity, neg_user_entity = pos_neg_pair_t[:, 6], pos_neg_pair_t[:, 7]
-            item_entity_mask, user_entity_mask = pos_neg_pair_t[:, 5], pos_neg_pair_t[:, 8]
+            pos_item_entity, neg_item_entity = pos_neg_pair_t[:,
+                                                              3], pos_neg_pair_t[:, 4]
+            pos_user_entity, neg_user_entity = pos_neg_pair_t[:,
+                                                              6], pos_neg_pair_t[:, 7]
+            item_entity_mask, user_entity_mask = pos_neg_pair_t[:,
+                                                                5], pos_neg_pair_t[:, 8]
 
             # l2 norm
             x = self.x
             item_pos_reg = (x[pos_neg_pair_t[:, 1]] - x[pos_item_entity]) * (
-                        x[pos_neg_pair_t[:, 1]] - x[pos_item_entity])
+                x[pos_neg_pair_t[:, 1]] - x[pos_item_entity])
             item_neg_reg = (x[pos_neg_pair_t[:, 1]] - x[neg_item_entity]) * (
-                        x[pos_neg_pair_t[:, 1]] - x[neg_item_entity])
+                x[pos_neg_pair_t[:, 1]] - x[neg_item_entity])
             item_pos_reg = item_pos_reg.sum(dim=-1)
             item_neg_reg = item_neg_reg.sum(dim=-1)
 
             user_pos_reg = (x[pos_neg_pair_t[:, 0]] - x[pos_user_entity]) * (
-                        x[pos_neg_pair_t[:, 0]] - x[pos_user_entity])
+                x[pos_neg_pair_t[:, 0]] - x[pos_user_entity])
             user_neg_reg = (x[pos_neg_pair_t[:, 0]] - x[neg_user_entity]) * (
-                        x[pos_neg_pair_t[:, 0]] - x[neg_user_entity])
+                x[pos_neg_pair_t[:, 0]] - x[neg_user_entity])
             user_pos_reg = user_pos_reg.sum(dim=-1)
             user_neg_reg = user_neg_reg.sum(dim=-1)
 
-            item_reg_los = -((item_pos_reg - item_neg_reg) * item_entity_mask).sigmoid().log().sum()
-            user_reg_los = -((user_pos_reg - user_neg_reg) * user_entity_mask).sigmoid().log().sum()
+            item_reg_los = -((item_pos_reg - item_neg_reg) *
+                             item_entity_mask).sigmoid().log().sum()
+            user_reg_los = -((user_pos_reg - user_neg_reg) *
+                             user_entity_mask).sigmoid().log().sum()
             reg_los = item_reg_los + user_reg_los
 
             # two parts of loss
@@ -95,6 +105,68 @@ class GraphRecsysModel(torch.nn.Module):
                 with torch.no_grad():
                     self.cached_repr = self.forward()
 
+    def _update_mean_params(self):
+        for param_name, param in self.named_parameters():
+            _buff_param_name = param_name.replace('.', '__')
+            self.register_buffer(_buff_param_name +
+                                 '_estimated_mean', param.data.clone())
+
+    def _update_fisher_params(self, pos_neg_pair_t):
+        log_likelihood = self.real_loss(pos_neg_pair_t)
+        grad_log_liklihood = autograd.grad(log_likelihood, self.parameters())
+        _buff_param_names = [param[0].replace(
+            '.', '__') for param in self.named_parameters()]
+        for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
+            self.register_buffer(_buff_param_name +
+                                 '_estimated_fisher', param.data.clone() ** 2)
+
+    def _save_fisher_params(self):
+        for param_name, param in self.named_parameters():
+            _buff_param_name = param_name.replace('.', '__')
+            estimated_mean = getattr(
+                self, '{}_estimated_mean'.format(_buff_param_name))
+            estimated_fisher = np.array(
+                getattr(self, '{}_estimated_fisher'.format(_buff_param_name)))
+            np.savetxt('estimated_mean', estimated_mean)
+            np.savetxt('estimated_fisher', estimated_fisher)
+            print(np.mean(estimated_fisher), np.max(
+                estimated_fisher), np.min(estimated_fisher))
+            break
+
+    def register_ewc_params(self, pos_neg_pair_t):
+        self._update_fisher_params(pos_neg_pair_t)
+        self._update_mean_params()
+
+    def _compute_consolidation_loss(self):
+        losses = []
+        for param_name, param in self.named_parameters():
+            _buff_param_name = param_name.replace('.', '__')
+            estimated_mean = getattr(
+                self, '{}_estimated_mean'.format(_buff_param_name))
+            estimated_fisher = getattr(
+                self, '{}_estimated_fisher'.format(_buff_param_name))
+            if self.ewc_type == 'l2':
+                losses.append((10e-6 * (param - estimated_mean) ** 2).sum())
+            else:
+                losses.append(
+                    (estimated_fisher * (param - estimated_mean) ** 2).sum())
+        return 1 * (self.ewc_lambda / 2) * sum(losses)
+
+    def loss(self, pos_neg_pair_t):
+        loss1 = self.real_loss(pos_neg_pair_t)
+        loss2 = 0
+        if self.ewc_lambda > 0:
+            loss2 = self._compute_consolidation_loss()
+        loss = loss1 + loss2
+        return loss
+
+    def save(self, filename):
+        torch.save(self.model, filename)
+
+    def load(self, filename):
+        self.model = torch.load(filename)
+
+
 class MFRecsysModel(torch.nn.Module):
     def __init__(self, **kwargs):
         super(MFRecsysModel, self).__init__()
@@ -114,10 +186,12 @@ class MFRecsysModel(torch.nn.Module):
             pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
             label = pos_neg_pair_t[:, -1].float()
         else:
-            pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])[:1]
+            pos_pred = self.predict(
+                pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])[:1]
             neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2])
             pred = torch.cat([pos_pred, neg_pred])
-            label = torch.cat([torch.ones_like(pos_pred), torch.zeros_like(neg_pred)]).float()
+            label = torch.cat([torch.ones_like(pos_pred),
+                               torch.zeros_like(neg_pred)]).float()
 
         loss = loss_func(pred, label)
         return loss
@@ -153,7 +227,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
         # Create node embedding
         if not self.if_use_features:
-            self.x = Parameter(torch.Tensor(kwargs['dataset']['num_nodes'], kwargs['emb_dim']))
+            self.x = Parameter(torch.Tensor(
+                kwargs['dataset']['num_nodes'], kwargs['emb_dim']))
         else:
             raise NotImplementedError('Feature not implemented!')
 
@@ -170,12 +245,15 @@ class PEABaseRecsysModel(GraphRecsysModel):
             self.pea_channels.append(kwargs_cpy['channel_class'](**kwargs_cpy))
 
         if self.channel_aggr == 'att':
-            self.att = Parameter(torch.Tensor(1, len(kwargs['meta_path_steps']), kwargs['repr_dim']))
+            self.att = Parameter(torch.Tensor(
+                1, len(kwargs['meta_path_steps']), kwargs['repr_dim']))
 
         if self.channel_aggr == 'cat':
-            self.fc1 = torch.nn.Linear(2 * len(kwargs['meta_path_steps']) * kwargs['repr_dim'], kwargs['repr_dim'])
+            self.fc1 = torch.nn.Linear(
+                2 * len(kwargs['meta_path_steps']) * kwargs['repr_dim'], kwargs['repr_dim'])
         else:
-            self.fc1 = torch.nn.Linear(2 * kwargs['repr_dim'], kwargs['repr_dim'])
+            self.fc1 = torch.nn.Linear(
+                2 * kwargs['repr_dim'], kwargs['repr_dim'])
         self.fc2 = torch.nn.Linear(kwargs['repr_dim'], 1)
 
     def reset_parameters(self):
@@ -190,7 +268,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
     def forward(self, metapath_idx=None):
         x = self.x
-        x = [module(x, self.meta_path_edge_index_list[idx]).unsqueeze(1) for idx, module in enumerate(self.pea_channels)]
+        x = [module(x, self.meta_path_edge_index_list[idx]).unsqueeze(1)
+             for idx, module in enumerate(self.pea_channels)]
         if metapath_idx is not None:
             x[metapath_idx] = torch.zeros_like(x[metapath_idx])
         x = torch.cat(x, dim=1)
@@ -199,7 +278,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
         elif self.channel_aggr == 'mean':
             x = x.mean(dim=1)
         elif self.channel_aggr == 'att':
-            atts = F.softmax(torch.sum(x * self.att, dim=-1), dim=-1).unsqueeze(-1)
+            atts = F.softmax(torch.sum(x * self.att, dim=-1),
+                             dim=-1).unsqueeze(-1)
             x = torch.sum(x * atts, dim=1)
         else:
             raise NotImplemented('Other aggr methods not implemeted!')
