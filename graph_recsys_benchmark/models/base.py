@@ -37,7 +37,7 @@ class GraphRecsysModel(torch.nn.Module):
         self.reset_parameters()
 
         self.ewc_type = kwargs.get('ewc_type', 'ewc')
-        self.ewc_lambda = kwargs.get('ewc_lambda', 0)
+        self.ewc_lambda = kwargs.get('ewc_lambda', 0.2)
 
     def _init(self, **kwargs):
         raise NotImplementedError
@@ -155,17 +155,13 @@ class GraphRecsysModel(torch.nn.Module):
     def loss(self, pos_neg_pair_t):
         loss1 = self.real_loss(pos_neg_pair_t)
         loss2 = 0
-        if self.ewc_lambda > 0:
+        try:
             loss2 = self._compute_consolidation_loss()
+        except Exception as e:
+            print(e)
+
         loss = loss1 + loss2
         return loss
-
-    def save(self, filename):
-        torch.save(self.model, filename)
-
-    def load(self, filename):
-        self.model = torch.load(filename)
-
 
 class MFRecsysModel(torch.nn.Module):
     def __init__(self, **kwargs):
