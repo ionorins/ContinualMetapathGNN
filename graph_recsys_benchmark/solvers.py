@@ -256,6 +256,8 @@ class BaseSolver(object):
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
                                 model.register_ewc_params(dataset.train_data)
+                                torch.save(model, 'model.pth')
+                                
                                 # Sumarize the epoch
                                 HRs_per_epoch_np = np.vstack([HRs_per_epoch_np, HRs])
                                 NDCGs_per_epoch_np = np.vstack([NDCGs_per_epoch_np, NDCGs])
@@ -340,6 +342,7 @@ class BaseSolver(object):
                         clearcache()
 
                 if self.dataset_args['model'][:3] == 'PEA' and self.train_args['metapath_test']:
+                    print('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEELP' * 100)
                     run = 1
                     if self.dataset_args['dataset'] == 'Movielens':
                         epoch = 30
@@ -421,5 +424,3 @@ class BaseSolver(object):
                     )
                 )
                 instantwrite(logger_file)
-
-            torch.save(model, 'model.pth')
