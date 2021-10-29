@@ -117,6 +117,7 @@ class GraphRecsysModel(torch.nn.Module):
         _buff_param_names = [param[0].replace(
             '.', '__') for param in self.named_parameters()]
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
+            print('_buff_param_name:', _buff_param_name)
             if param is None:
                 continue
             print('eh?')
@@ -125,7 +126,6 @@ class GraphRecsysModel(torch.nn.Module):
 
     def _save_fisher_params(self):
         for param_name, param in self.named_parameters():
-            print('param_name:', param_name)
             _buff_param_name = param_name.replace('.', '__')
             estimated_mean = getattr(
                 self, '{}_estimated_mean'.format(_buff_param_name))
@@ -144,6 +144,7 @@ class GraphRecsysModel(torch.nn.Module):
     def _compute_consolidation_loss(self):
         losses = []
         for param_name, param in self.named_parameters():
+            print('param_name:', param_name)
             _buff_param_name = param_name.replace('.', '__')
             estimated_mean = getattr(
                 self, '{}_estimated_mean'.format(_buff_param_name))
