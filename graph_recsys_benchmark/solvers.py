@@ -338,8 +338,10 @@ class BaseSolver(object):
                         )
                         instantwrite(logger_file)
 
-                        os.rmdir('checkpoint/loggers')
-                        os.rmdir('checkpoint/weights')
+                        import shutil
+
+                        shutil.rmtree('checkpoint/loggers')
+                        shutil.rmtree('checkpoint/weights')
 
                         del model, optimizer, loss, loss_per_batch, rec_metrics, train_dataloader
                         clearcache()
