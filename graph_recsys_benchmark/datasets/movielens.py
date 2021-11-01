@@ -797,26 +797,17 @@ class MovieLens(Dataset):
                 ratings = ratings.drop_duplicates()
                 tagging = tagging.drop_duplicates()
 
-                print(ratings)
+                if self.batches > 0:
+                    min_timestamp = ratings.timestamp.min()
+                    max_timestamp = ratings.timestamp.max() + 1
 
-                min_timestamp = ratings.timestamp.min()
-                max_timestamp = ratings.timestamp.max() + 1
+                    diff = (max_timestamp - min_timestamp) / self.batches
 
-                diff = (max_timestamp - min_timestamp) / self.batches
+                    start = min_timestamp + self.run * diff
+                    stop = start + diff
 
-                start = min_timestamp + self.run * diff
-                stop = start + diff
-
-                print(f'min_timestamp: {min_timestamp}')
-                print(f'max_timestamp: {max_timestamp}')
-                print(f'diff: {diff}')
-                print(f'start: {start}')
-                print(f'stop: {stop}')
-
-                ratings = ratings[ratings.timestamp >= start]
-                ratings = ratings[ratings.timestamp < stop]
-
-                print(ratings)
+                    ratings = ratings[ratings.timestamp >= start]
+                    ratings = ratings[ratings.timestamp < stop]
 
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
