@@ -804,8 +804,8 @@ class MovieLens(Dataset):
 
                 diff = (max_timestamp - min_timestamp) / self.batches
 
-                start = self.run * diff
-                stop = (self.run + 1) * diff
+                start = min_timestamp + self.run * diff
+                stop = start + diff
 
                 print(f'min_timestamp: {min_timestamp}')
                 print(f'max_timestamp: {max_timestamp}')
