@@ -682,19 +682,6 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp > 1514764799]     #2M interactions
 
-                min_timestamp = ratings.timestamp.min()
-                max_timestamp = ratings.timestamp.max() + 1
-
-                diff = (max_timestamp - min_timestamp) / self.batches
-
-                start = self.run * diff
-                stop = (self.run + 1) * diff
-
-                ratings = ratings[ratings.timestamp >= start]
-                ratings = ratings[ratings.timestamp < stop]
-
-                print(ratings)
-
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
                 ratings = ratings[ratings.iid.isin(movies.iid.unique())]
@@ -809,6 +796,19 @@ class MovieLens(Dataset):
                 movies = movies.drop_duplicates()
                 ratings = ratings.drop_duplicates()
                 tagging = tagging.drop_duplicates()
+
+                min_timestamp = ratings.timestamp.min()
+                max_timestamp = ratings.timestamp.max() + 1
+
+                diff = (max_timestamp - min_timestamp) / self.batches
+
+                start = self.run * diff
+                stop = (self.run + 1) * diff
+
+                ratings = ratings[ratings.timestamp >= start]
+                ratings = ratings[ratings.timestamp < stop]
+
+                print(ratings)
 
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
