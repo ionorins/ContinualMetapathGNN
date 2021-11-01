@@ -797,7 +797,7 @@ class MovieLens(Dataset):
                 ratings = ratings.drop_duplicates()
                 tagging = tagging.drop_duplicates()
 
-                if self.batches > 0:
+                if self.run > 0:
                     min_timestamp = ratings.timestamp.min()
                     max_timestamp = ratings.timestamp.max() + 1
 
