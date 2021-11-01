@@ -143,19 +143,21 @@ class GraphRecsysModel(torch.nn.Module):
     def _compute_consolidation_loss(self):
         losses = []
         for param_name, param in self.named_parameters():
-            if param is None:
-                continue
-            print("param_name", param_name)
-            _buff_param_name = param_name.replace('.', '__')
-            estimated_mean = getattr(
-                self, '{}_estimated_mean'.format(_buff_param_name))
-            estimated_fisher = getattr(
-                self, '{}_estimated_fisher'.format(_buff_param_name))
-            if self.ewc_type == 'l2':
-                losses.append((10e-6 * (param - estimated_mean) ** 2).sum())
-            else:
-                losses.append(
-                    (estimated_fisher * (param - estimated_mean) ** 2).sum())
+            try:
+                print("param_name", param_name)
+                _buff_param_name = param_name.replace('.', '__')
+                estimated_mean = getattr(
+                    self, '{}_estimated_mean'.format(_buff_param_name))
+                estimated_fisher = getattr(
+                    self, '{}_estimated_fisher'.format(_buff_param_name))
+                if self.ewc_type == 'l2':
+                    losses.append((10e-6 * (param - estimated_mean) ** 2).sum())
+                else:
+                    losses.append(
+                        (estimated_fisher * (param - estimated_mean) ** 2).sum())
+                print('_buff_param_name:', _buff_param_name)
+            except:
+                pass
         return 1 * (self.ewc_lambda / 2) * sum(losses)
 
     def loss(self, pos_neg_pair_t):
