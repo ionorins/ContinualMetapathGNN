@@ -807,6 +807,12 @@ class MovieLens(Dataset):
                 start = self.run * diff
                 stop = (self.run + 1) * diff
 
+                print(f'min_timestamp: {min_timestamp}')
+                print(f'max_timestamp: {max_timestamp}')
+                print(f'diff: {diff}')
+                print(f'start: {start}')
+                print(f'stop: {stop}')
+
                 ratings = ratings[ratings.timestamp >= start]
                 ratings = ratings[ratings.timestamp < stop]
 
