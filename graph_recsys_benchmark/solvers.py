@@ -104,7 +104,9 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
-        for i in range(3):
+        self.dataset_args['batches'] = 3
+        
+        for i in range(self.dataset_args['batches']):
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
                 os.makedirs(global_logger_path, exist_ok=True)
@@ -113,6 +115,8 @@ class BaseSolver(object):
                 load_global_logger(global_logger_file_path)
 
             # Create the dataset
+            self.dataset_args['run'] = i
+            
             dataset = load_dataset(self.dataset_args)
 
             logger_file_path = os.path.join(global_logger_path, 'logger_file.txt')
@@ -198,7 +202,7 @@ class BaseSolver(object):
                                 loss_per_batch = []
                                 model.train()
                                 dataset.cf_negative_sampling()
-                                print(dataset.train_data)
+                                # print(dataset.train_data)
                                 
                                 train_dataloader = DataLoader(
                                     dataset,
@@ -342,6 +346,7 @@ class BaseSolver(object):
 
                         shutil.rmtree('checkpoint/loggers')
                         shutil.rmtree('checkpoint/weights')
+                        os.remove('checkpoint/data/Movielenslatest-small/processed/ml_latest-small_core_10_type_hete.pkl')
 
                         del model, optimizer, loss, loss_per_batch, rec_metrics, train_dataloader
                         clearcache()

@@ -614,6 +614,9 @@ class MovieLens(Dataset):
         self.sampling_strategy = kwargs['sampling_strategy']
         self.cf_loss_type = kwargs['cf_loss_type']
 
+        self.run = kwargs['run']
+        self.batches = kwargs['batches']
+
         super(MovieLens, self).__init__(root, transform, pre_transform, pre_filter)
 
         with open(self.processed_paths[0], 'rb') as f:  # Read the class property
@@ -678,6 +681,19 @@ class MovieLens(Dataset):
                 genome_tags = genome_tags.drop_duplicates()
 
                 ratings = ratings[ratings.timestamp > 1514764799]     #2M interactions
+
+                min_timestamp = ratings.timestamp.min()
+                max_timestamp = ratings.timestamp.max() + 1
+
+                diff = (max_timestamp - min_timestamp) / self.batches
+
+                start = run * batches
+                stop = (run + 1) * batches
+
+                ratings = ratings[ratings.timestamp >= start]
+                ratings = ratings[ratings.timestamp < stop]
+
+                print(ratings)
 
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
