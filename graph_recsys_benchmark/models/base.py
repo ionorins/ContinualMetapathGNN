@@ -119,7 +119,7 @@ class GraphRecsysModel(torch.nn.Module):
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
             if param is None:
                 continue
-            print('_buff_param_name:', _buff_param_name)
+            # print('_buff_param_name:', _buff_param_name)
             self.register_buffer(_buff_param_name +
                                  '_estimated_fisher', param.data.clone() ** 2)
 
@@ -144,7 +144,7 @@ class GraphRecsysModel(torch.nn.Module):
         losses = []
         for param_name, param in self.named_parameters():
             try:
-                print("param_name", param_name)
+                # print("param_name", param_name)
                 _buff_param_name = param_name.replace('.', '__')
                 estimated_mean = getattr(
                     self, '{}_estimated_mean'.format(_buff_param_name))
@@ -155,7 +155,7 @@ class GraphRecsysModel(torch.nn.Module):
                 else:
                     losses.append(
                         (estimated_fisher * (param - estimated_mean) ** 2).sum())
-                print('_buff_param_name:', _buff_param_name)
+                # print('_buff_param_name:', _buff_param_name)
             except:
                 pass
         return 1 * (self.ewc_lambda / 2) * sum(losses)
