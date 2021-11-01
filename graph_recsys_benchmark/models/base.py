@@ -163,10 +163,10 @@ class GraphRecsysModel(torch.nn.Module):
     def loss(self, pos_neg_pair_t):
         loss1 = self.real_loss(pos_neg_pair_t)
         loss2 = 0
-        try:
-            loss2 = self._compute_consolidation_loss()
-        except Exception as e:
-            print(e)
+        # try:
+        #     loss2 = self._compute_consolidation_loss()
+        # except Exception as e:
+        #     print(e)
 
         loss = loss1 + loss2
         return loss
