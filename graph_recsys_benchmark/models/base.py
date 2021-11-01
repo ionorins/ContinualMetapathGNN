@@ -117,10 +117,9 @@ class GraphRecsysModel(torch.nn.Module):
         _buff_param_names = [param[0].replace(
             '.', '__') for param in self.named_parameters()]
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
-            # print('_buff_param_name:', _buff_param_name)
             if param is None:
                 continue
-            # print('eh?')
+            print('_buff_param_name:', _buff_param_name)
             self.register_buffer(_buff_param_name +
                                  '_estimated_fisher', param.data.clone() ** 2)
 
@@ -133,8 +132,8 @@ class GraphRecsysModel(torch.nn.Module):
                 getattr(self, '{}_estimated_fisher'.format(_buff_param_name)))
             np.savetxt('estimated_mean', estimated_mean)
             np.savetxt('estimated_fisher', estimated_fisher)
-            # print(np.mean(estimated_fisher), np.max(
-            #     estimated_fisher), np.min(estimated_fisher))
+            print(np.mean(estimated_fisher), np.max(
+                estimated_fisher), np.min(estimated_fisher))
             break
 
     def register_ewc_params(self, pos_neg_pair_t):
@@ -144,7 +143,9 @@ class GraphRecsysModel(torch.nn.Module):
     def _compute_consolidation_loss(self):
         losses = []
         for param_name, param in self.named_parameters():
-            # print('param_name:', param_name)
+            if param is None:
+                continue
+            print("param_name", param_name)
             _buff_param_name = param_name.replace('.', '__')
             estimated_mean = getattr(
                 self, '{}_estimated_mean'.format(_buff_param_name))
@@ -163,8 +164,7 @@ class GraphRecsysModel(torch.nn.Module):
         try:
             loss2 = self._compute_consolidation_loss()
         except Exception as e:
-            # print(e)
-            pass
+            print(e)
 
         loss = loss1 + loss2
         return loss
