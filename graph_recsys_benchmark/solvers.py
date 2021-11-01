@@ -105,7 +105,7 @@ class BaseSolver(object):
 
     def run(self):
         self.dataset_args['batches'] = 3
-        
+
         for i in range(self.dataset_args['batches']):
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
@@ -346,8 +346,8 @@ class BaseSolver(object):
 
                         shutil.rmtree('checkpoint/loggers')
                         shutil.rmtree('checkpoint/weights')
-                        os.remove('checkpoint/data/Movielenslatest-small/processed/ml_latest-small_core_10_type_hete.pkl')
-
+                        shutil.rmtree('checkpoint/data/Movielenslatest-small/processed')
+                      
                         del model, optimizer, loss, loss_per_batch, rec_metrics, train_dataloader
                         clearcache()
 
