@@ -167,8 +167,8 @@ class GraphRecsysModel(torch.nn.Module):
             loss2 = self._compute_consolidation_loss()
         except Exception as e:
             print(e)
-        print(loss2)
-
+        print(f'loss1: {loss1} loss2: {loss2}')
+        
         loss = loss1 + loss2
         return loss
 
