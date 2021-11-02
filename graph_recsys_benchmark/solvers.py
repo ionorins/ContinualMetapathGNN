@@ -104,7 +104,8 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
-        self.dataset_args['batches'] = 3
+        if 'batches' not in self.dataset_args:
+            self.dataset_args['batches'] = 3
 
         for i in range(self.dataset_args['batches']):
             global_logger_path = self.train_args['logger_folder']
