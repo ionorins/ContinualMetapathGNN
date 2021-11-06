@@ -8,7 +8,6 @@ import tqdm
 from torch.utils.data import DataLoader
 
 from graph_recsys_benchmark.utils import *
-from continual.models.ewc import EWC
 
 class BaseSolver(object):
     def __init__(self, model_class, dataset_args, model_args, train_args):
@@ -258,8 +257,6 @@ class BaseSolver(object):
 
                                 model.eval()
                                 with torch.no_grad():
-                                    self.dataset_args['run'] = -1
-                                    # test_dataset = load_dataset(self.dataset_args)
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
                                 model.register_ewc_params(dataset.train_data)
