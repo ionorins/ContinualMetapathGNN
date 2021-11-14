@@ -259,6 +259,8 @@ class BaseSolver(object):
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
+                                print(model.forward())
+                                exit()
                                 model.register_ewc_params(dataset.train_data)
                                 torch.save(model, 'model.pth')
 
