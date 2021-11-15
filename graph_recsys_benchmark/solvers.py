@@ -222,9 +222,6 @@ class BaseSolver(object):
                                             batch[:, 1:] -= dataset.e2nid_dict['iid'][0]
                                     batch = batch.to(self.train_args['device'])
 
-                                    print(batch)
-                                    exit()
-
                                     optimizer.zero_grad()
                                     loss = model.loss(batch)
                                     loss.backward()
