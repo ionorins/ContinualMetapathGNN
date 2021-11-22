@@ -272,9 +272,10 @@ class PEABaseRecsysModel(GraphRecsysModel):
             glorot(self.att)
 
     def forward(self, metapath_idx=None):
+        print('forward' * 10)
         print(metapath_idx)
         print(self.channel_aggr)
-        exit()
+
         x = self.x
         x = [module(x, self.meta_path_edge_index_list[idx]).unsqueeze(1)
              for idx, module in enumerate(self.pea_channels)]
