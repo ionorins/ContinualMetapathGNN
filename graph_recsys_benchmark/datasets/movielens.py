@@ -818,10 +818,6 @@ class MovieLens(Dataset):
                 user_count.name = 'user_count'
                 ratings = ratings[ratings.join(user_count, on='uid').user_count > self.num_core]
 
-                print(movie_count.unique())
-                print(user_count.unique())
-
-                exit()
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
                 tagging = tagging[tagging.iid.isin(ratings.iid.unique())]

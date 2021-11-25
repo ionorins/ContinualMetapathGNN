@@ -106,6 +106,8 @@ class BaseSolver(object):
         if 'batches' not in self.dataset_args:
             self.dataset_args['batches'] = 3
 
+        last_embeddings = None
+
         for i in range(self.dataset_args['batches']):
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
@@ -197,6 +199,8 @@ class BaseSolver(object):
 
                         t_start = time.perf_counter()
                         if start_epoch <= self.train_args['epochs']:
+                            print(dataset)
+
                             # Start training model
                             for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
@@ -260,8 +264,7 @@ class BaseSolver(object):
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
                                 model.register_ewc_params(dataset.train_data)
-                                print('model shape: ')
-                                print(model.forward().shape)
+                                last_embeddings = model.forward()
                                 torch.save(model, 'model.pth')
 
                                 # Sumarize the epoch
