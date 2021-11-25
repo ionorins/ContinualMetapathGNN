@@ -214,7 +214,7 @@ class BaseSolver(object):
                         
                         if start_epoch <= self.train_args['epochs']:
                             # Start training model
-                            for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
+                            for epoch in range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
                                 model.train()
                                 dataset.cf_negative_sampling()
@@ -223,9 +223,9 @@ class BaseSolver(object):
                                 print(dataset.train_data)
                                 print(dataset.train_data[:, 0])
 
-                                if last_nodes is not None:
-                                    mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
-                                    dataset.train_data = dataset.train_data[mask]
+                                # if last_nodes is not None:
+                                #     mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
+                                #     dataset.train_data = dataset.train_data[mask]
 
                                 
                                 # print(dataset.train_data)
