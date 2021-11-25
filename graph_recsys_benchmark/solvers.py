@@ -109,7 +109,7 @@ class BaseSolver(object):
         last_embeddings = None
         last_nodes = None
 
-        for i in range(1):# range(self.dataset_args['batches']):
+        for i in range(self.dataset_args['batches']):
             import shutil
 
             shutil.rmtree('checkpoint/loggers', ignore_errors=True)
@@ -124,7 +124,7 @@ class BaseSolver(object):
                 load_global_logger(global_logger_file_path)
 
             # Create the dataset
-            self.dataset_args['run'] = 3
+            self.dataset_args['run'] = i
             
             dataset = load_dataset(self.dataset_args)
 
@@ -223,9 +223,9 @@ class BaseSolver(object):
                                 print(dataset.train_data)
                                 print(dataset.train_data[:, 0])
 
-                                # if last_nodes is not None:
-                                #     mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
-                                #     dataset.train_data = dataset.train_data[mask]
+                                if last_nodes is not None:
+                                    mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
+                                    dataset.train_data = dataset.train_data[mask]
 
                                 
                                 # print(dataset.train_data)
