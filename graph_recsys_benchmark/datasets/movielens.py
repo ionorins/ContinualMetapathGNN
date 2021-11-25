@@ -850,8 +850,8 @@ class MovieLens(Dataset):
                 movies, ratings, tagging, tags = reindex_df_mlsmall(
                     movies, ratings, tagging)
 
-                self.movies = movies['iid'].to_numpy()
-                self.users = users['uid'].to_numpy()
+                self.movies = ratings['iid'].to_numpy()
+                self.users = ratings['uid'].to_numpy()
 
                 # Drop the infrequent writer, actor and directors
                 movies = drop_infrequent_concept_from_str(movies, 'writers', self.num_feat_core)
