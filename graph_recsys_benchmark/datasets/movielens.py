@@ -594,13 +594,6 @@ class MovieLens(Dataset):
                  pre_filter=None,
                  **kwargs):
 
-        #print(root)
-        #print(name)
-        #print(transform)
-        #print(pre_transform)
-        #print(pre_filter)
-        #print(kwargs)
-        #exit(0)
         self.name = name.lower()
         self.type = kwargs['type']
         assert self.name in ['25m', 'latest-small']
@@ -806,7 +799,7 @@ class MovieLens(Dataset):
                     start = min_timestamp + self.run * diff
                     stop = start + diff
 
-                    ratings = ratings[ratings.timestamp >= start]
+                    # ratings = ratings[ratings.timestamp >= start]
                     ratings = ratings[ratings.timestamp < stop]
 
                 # Sync
