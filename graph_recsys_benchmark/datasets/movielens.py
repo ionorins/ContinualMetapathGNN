@@ -850,9 +850,6 @@ class MovieLens(Dataset):
                 movies, ratings, tagging, tags = reindex_df_mlsmall(
                     movies, ratings, tagging)
 
-                self.movies = ratings['iid'].to_numpy()
-                self.users = ratings['uid'].to_numpy()
-
                 # Drop the infrequent writer, actor and directors
                 movies = drop_infrequent_concept_from_str(movies, 'writers', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
@@ -868,6 +865,8 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging)
+                self.movies = set(ratings['unique_iids'])
+                self.users = set(ratings['unique_uids'])
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
