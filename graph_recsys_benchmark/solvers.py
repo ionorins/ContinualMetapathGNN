@@ -109,7 +109,7 @@ class BaseSolver(object):
         last_embeddings = None
         last_nodes = None
 
-        for i in range(self.dataset_args['batches']):
+        for i in range(1):# range(self.dataset_args['batches']):
             import shutil
 
             shutil.rmtree('checkpoint/loggers', ignore_errors=True)
@@ -124,7 +124,7 @@ class BaseSolver(object):
                 load_global_logger(global_logger_file_path)
 
             # Create the dataset
-            self.dataset_args['run'] = i
+            self.dataset_args['run'] = 3
             
             dataset = load_dataset(self.dataset_args)
 
