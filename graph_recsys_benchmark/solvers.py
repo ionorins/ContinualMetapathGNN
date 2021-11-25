@@ -199,14 +199,14 @@ class BaseSolver(object):
 
                         t_start = time.perf_counter()
                         if start_epoch <= self.train_args['epochs']:
-                            print('dataset:')
-                            print(dataset.train_data)
-
                             # Start training model
                             for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
                                 model.train()
                                 dataset.cf_negative_sampling()
+
+                                print('dataset:')
+                                print(dataset.train_data)
                                 # print(dataset.train_data)
                                 
                                 train_dataloader = DataLoader(
