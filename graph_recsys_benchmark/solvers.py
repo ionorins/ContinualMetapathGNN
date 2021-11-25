@@ -221,6 +221,11 @@ class BaseSolver(object):
 
                                 print('dataset:')
                                 print(dataset.train_data)
+
+                                mask = [x.item() in set for x in dataset.train_data[:, 0]]
+                                dataset.train_data = dataset.train_data[mask]
+
+                                
                                 # print(dataset.train_data)
                                 
                                 train_dataloader = DataLoader(
