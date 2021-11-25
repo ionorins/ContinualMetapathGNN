@@ -278,6 +278,7 @@ def clearcache():
 
 
 def update_pea_graph_input(dataset_args, train_args, dataset):
+    print('!!!!graph has been updated!!!')
     if dataset_args['dataset'] == "Movielens":
         if dataset_args['name'] == "latest-small":
             user2item_edge_index = \

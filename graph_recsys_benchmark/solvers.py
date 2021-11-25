@@ -107,6 +107,7 @@ class BaseSolver(object):
             self.dataset_args['batches'] = 3
 
         last_embeddings = None
+        last_nodes = None
 
         for i in range(self.dataset_args['batches']):
             import shutil
@@ -204,9 +205,7 @@ class BaseSolver(object):
                             clearcache()
 
                         t_start = time.perf_counter()
-                        print(len(dataset.movies))
-                        print(len(dataset.users))
-
+                        
                         if start_epoch <= self.train_args['epochs']:
                             # Start training model
                             for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
@@ -275,6 +274,7 @@ class BaseSolver(object):
 
                                 model.register_ewc_params(dataset.train_data)
                                 last_embeddings = model.forward()
+                                last_nodes = self.movies + self.users
                                 torch.save(model, 'model.pth')
 
                                 # Sumarize the epoch
