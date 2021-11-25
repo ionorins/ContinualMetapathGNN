@@ -274,7 +274,7 @@ class BaseSolver(object):
 
                                 model.register_ewc_params(dataset.train_data)
                                 last_embeddings = model.forward()
-                                last_nodes = dataset.movies + dataset.users
+                                last_nodes = dataset.movies.union(dataset.users)
                                 torch.save(model, 'model.pth')
 
                                 # Sumarize the epoch
