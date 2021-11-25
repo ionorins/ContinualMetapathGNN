@@ -865,8 +865,8 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging)
-                self.movies = set(ratings['unique_iids'])
-                self.users = set(ratings['unique_uids'])
+                self.movies = set(dataset_property_dict['unique_iids'])
+                self.users = set(dataset_property_dict['unique_uids'])
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
