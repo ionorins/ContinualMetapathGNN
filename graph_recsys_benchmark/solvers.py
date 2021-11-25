@@ -154,6 +154,7 @@ class BaseSolver(object):
                             model = self.model_class(**self.model_args)
                         else:
                             model = torch.load('model.pth')
+                            model.update_graph_input(dataset)
                         
                         model = model.to(self.train_args['device'])
 
