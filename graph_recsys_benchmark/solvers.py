@@ -260,6 +260,7 @@ class BaseSolver(object):
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
                                 model.register_ewc_params(dataset.train_data)
+                                print('model shape: ')
                                 print(model.forward().shape)
                                 torch.save(model, 'model.pth')
 
