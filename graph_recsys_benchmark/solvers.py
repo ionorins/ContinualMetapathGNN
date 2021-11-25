@@ -155,6 +155,7 @@ class BaseSolver(object):
                         else:
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
+                            print(last_embeddings-model.forward())
                         
                         model = model.to(self.train_args['device'])
 
