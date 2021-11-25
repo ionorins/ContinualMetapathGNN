@@ -109,6 +109,12 @@ class BaseSolver(object):
         last_embeddings = None
 
         for i in range(self.dataset_args['batches']):
+            import shutil
+
+            shutil.rmtree('checkpoint/loggers')
+            shutil.rmtree('checkpoint/weights')
+            shutil.rmtree('checkpoint/data/Movielenslatest-small/processed')
+
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
                 os.makedirs(global_logger_path, exist_ok=True)
@@ -350,12 +356,6 @@ class BaseSolver(object):
                                     train_loss_per_epoch_np[-1][0], eval_loss_per_epoch_np[-1][0])
                         )
                         instantwrite(logger_file)
-
-                        import shutil
-
-                        shutil.rmtree('checkpoint/loggers')
-                        shutil.rmtree('checkpoint/weights')
-                        shutil.rmtree('checkpoint/data/Movielenslatest-small/processed')
                       
                         del model, optimizer, loss, loss_per_batch, rec_metrics, train_dataloader
                         clearcache()
