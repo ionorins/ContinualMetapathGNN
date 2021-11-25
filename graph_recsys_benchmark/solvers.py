@@ -223,8 +223,9 @@ class BaseSolver(object):
                                 print(dataset.train_data)
                                 print(dataset.train_data[:, 0])
 
-                                mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
-                                dataset.train_data = dataset.train_data[mask]
+                                if last_nodes is not None:
+                                    mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
+                                    dataset.train_data = dataset.train_data[mask]
 
                                 
                                 # print(dataset.train_data)
