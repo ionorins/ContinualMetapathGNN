@@ -112,8 +112,11 @@ class BaseSolver(object):
             import shutil
 
             shutil.rmtree('checkpoint/loggers')
+            os.mkdir('checkpoint/loggers')
             shutil.rmtree('checkpoint/weights')
+            os.mkdir('checkpoint/weights')
             shutil.rmtree('checkpoint/data/Movielenslatest-small/processed')
+            os.mkdir('checkpoint/data/Movielenslatest-small/processed')
 
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
