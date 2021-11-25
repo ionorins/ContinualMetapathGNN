@@ -200,7 +200,7 @@ class BaseSolver(object):
                         t_start = time.perf_counter()
                         if start_epoch <= self.train_args['epochs']:
                             print('dataset:')
-                            print(dataset)
+                            print(dataset.train_data)
 
                             # Start training model
                             for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
