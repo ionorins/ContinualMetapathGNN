@@ -198,6 +198,9 @@ class BaseSolver(object):
                             clearcache()
 
                         t_start = time.perf_counter()
+                        print(dataset.movies)
+                        print(dataset.users)
+
                         if start_epoch <= self.train_args['epochs']:
                             # Start training model
                             for epoch in range(1): #range(start_epoch, self.train_args['epochs'] + 1):
