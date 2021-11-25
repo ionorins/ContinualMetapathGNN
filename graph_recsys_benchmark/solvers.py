@@ -158,6 +158,7 @@ class BaseSolver(object):
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
+                            print('max diff')
                             print(max(diff))
                         
                         model = model.to(self.train_args['device'])
