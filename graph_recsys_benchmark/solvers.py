@@ -285,7 +285,7 @@ class BaseSolver(object):
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
-                                model.register_ewc_params(dataset.train_data)
+                                # model.register_ewc_params(dataset.train_data)
                                 last_embeddings = model.forward()
                                 last_nodes = dataset.movies.union(dataset.users)
                                 torch.save(model, 'model.pth')
