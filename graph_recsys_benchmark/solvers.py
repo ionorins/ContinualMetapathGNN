@@ -156,7 +156,7 @@ class BaseSolver(object):
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
 
-                            diff = last_embeddings - model.forward(metapath_idx)
+                            diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
                             print('max diff')
                             print(max(diff))
@@ -286,7 +286,7 @@ class BaseSolver(object):
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
                                 model.register_ewc_params(dataset.train_data)
-                                last_embeddings = model.forward(metapath_idx)
+                                last_embeddings = model.forward()
                                 last_nodes = dataset.movies.union(dataset.users)
                                 torch.save(model, 'model.pth')
 
