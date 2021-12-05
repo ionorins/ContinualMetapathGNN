@@ -796,11 +796,11 @@ class MovieLens(Dataset):
 
                     diff = (max_timestamp - min_timestamp) / self.batches
 
-                    start = min_timestamp + self.run * diff
-                    stop = start + diff
+                    self.start = min_timestamp + self.run * diff
+                    self.stop = self.start + diff
 
                     # ratings = ratings[ratings.timestamp >= start]
-                    ratings = ratings[ratings.timestamp < stop]
+                    ratings = ratings[ratings.timestamp < self.stop]
 
                     print(f'len(ratings)={len(ratings)}')
 
@@ -868,8 +868,8 @@ class MovieLens(Dataset):
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging)
                 dataset_property_dict['num_nodes'] = 2902
-                print(ratings)
-                exit()
+                ratings = ratings[ratings.timestamp >= self.start]
+                self.new_nodes = set(ratings['iid']) + set(ratings['uid'])
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:

@@ -107,7 +107,6 @@ class BaseSolver(object):
             self.dataset_args['batches'] = 3
 
         last_embeddings = None
-        last_nodes = None
 
         for i in range(self.dataset_args['batches']):
             import shutil
@@ -219,9 +218,8 @@ class BaseSolver(object):
                                 model.train()
                                 dataset.cf_negative_sampling()
 
-                                if last_nodes is not None:
-                                    mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
-                                    dataset.train_data = dataset.train_data[mask]
+                                mask = [x.item() in dataset.new_nodes for x in dataset.train_data[:, 0]]
+                                dataset.train_data = dataset.train_data[mask]
 
                                 print(f'len(dataset.train_data)={len(dataset.train_data)}')
                                 
@@ -282,7 +280,6 @@ class BaseSolver(object):
 
                                 model.register_ewc_params(dataset.train_data)
                                 last_embeddings = model.forward()
-                                last_nodes = dataset.movies.union(dataset.users)
                                 torch.save(model, 'model.pth')
 
                                 # Sumarize the epoch
