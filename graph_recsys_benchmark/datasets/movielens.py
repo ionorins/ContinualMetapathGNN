@@ -870,12 +870,8 @@ class MovieLens(Dataset):
                 dataset_property_dict['num_nodes'] = 2902
                 ratings = ratings[ratings.timestamp >= self.start]
                 
-                movies = set(ratings['iid'])
-                users = set(ratings['uid'])
-                if len(movies.intersection(users)) > 0:
-                    print('INTERSECTION IS NOT EMPTY!!!')
-                    print(movies.intersection(users))
-                self.new_nodes = movies.union(movies)
+                self.movies = set(ratings['iid'])
+                self.users = set(ratings['uid'])
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
