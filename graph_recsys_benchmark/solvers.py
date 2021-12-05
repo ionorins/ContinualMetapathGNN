@@ -220,7 +220,7 @@ class BaseSolver(object):
                                 dataset.cf_negative_sampling()
 
                                 if last_nodes is not None:
-                                    mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
+                                    mask = [x.item() not in last_nodes for x in dataset.train_data[:, 0]]
                                     dataset.train_data = dataset.train_data[mask]
 
                                 print(f'len(dataset.train_data)={len(dataset.train_data)}')
