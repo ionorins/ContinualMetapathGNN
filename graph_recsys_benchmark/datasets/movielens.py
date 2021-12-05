@@ -1015,7 +1015,7 @@ class MovieLens(Dataset):
             raise NotImplementedError
         train_data_t = torch.from_numpy(train_data_np).long()
         shuffle_idx = torch.randperm(train_data_t.shape[0])
-        self.train_data = train_data_t#[shuffle_idx]
+        self.train_data = train_data_t[shuffle_idx]
         self.train_data_length = train_data_t.shape[0]
 
     def negative_sampling(self):
@@ -1152,7 +1152,8 @@ class MovieLens(Dataset):
         self.train_data = torch.cat([cf_train_data[:self.train_data_length], kg_train_data[:self.train_data_length]], dim=1)
 
     def __len__(self):
-        return self.train_data_length
+        return len(self.train_data)
+        # return self.train_data_length
 
     def __getitem__(self, idx):
         r"""Gets the data object at index :obj:`idx` and transforms it (in case
