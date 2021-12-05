@@ -306,10 +306,6 @@ class BaseSolver(object):
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(
                                         run, epoch, model, dataset)
 
-                                model.register_ewc_params(dataset.train_data)
-                                last_embeddings = model.forward()
-                                torch.save(model, 'model.pth')
-
                                 # Sumarize the epoch
                                 HRs_per_epoch_np = np.vstack(
                                     [HRs_per_epoch_np, HRs])
@@ -362,6 +358,10 @@ class BaseSolver(object):
                             if torch.cuda.is_available():
                                 torch.cuda.synchronize()
                         t_end = time.perf_counter()
+
+                        model.register_ewc_params(dataset.train_data)
+                        last_embeddings = model.forward()
+                        torch.save(model, 'model.pth')
 
                         HRs_per_run_np = np.vstack(
                             [HRs_per_run_np, np.max(HRs_per_epoch_np, axis=0)])
