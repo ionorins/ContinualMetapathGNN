@@ -224,7 +224,6 @@ class BaseSolver(object):
                                     dataset.train_data = dataset.train_data[mask]
 
                                 print(f'len(dataset.train_data)={len(dataset.train_data)}')
-                                break
                                 
                                 train_dataloader = DataLoader(
                                     dataset,
