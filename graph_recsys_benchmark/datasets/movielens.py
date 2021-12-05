@@ -874,6 +874,7 @@ class MovieLens(Dataset):
                 users = set(ratings['uid'])
                 if len(movies.intersection(users)) > 0:
                     print('INTERSECTION IS NOT EMPTY!!!')
+                    print(movies.intersection(users))
                 self.new_nodes = movies.union(movies)
             else:
                 raise NotImplementedError
