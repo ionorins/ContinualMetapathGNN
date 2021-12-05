@@ -802,6 +802,8 @@ class MovieLens(Dataset):
                     # ratings = ratings[ratings.timestamp >= start]
                     ratings = ratings[ratings.timestamp < stop]
 
+                    print(f'len(ratings)={len(ratings)}')
+
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
                 ratings = ratings[ratings.iid.isin(movies.iid.unique())]

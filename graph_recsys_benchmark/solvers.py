@@ -219,16 +219,12 @@ class BaseSolver(object):
                                 model.train()
                                 dataset.cf_negative_sampling()
 
-                                print('dataset:')
-                                print(dataset.train_data)
-                                print(dataset.train_data[:, 0])
-
                                 if last_nodes is not None:
                                     mask = [x.item() in last_nodes for x in dataset.train_data[:, 0]]
                                     dataset.train_data = dataset.train_data[mask]
 
-                                
-                                # print(dataset.train_data)
+                                print(f'len(dataset.train_data)={len(dataset.train_data)}')
+                                break
                                 
                                 train_dataloader = DataLoader(
                                     dataset,
@@ -285,7 +281,7 @@ class BaseSolver(object):
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(run, epoch, model, dataset)
 
-                                # model.register_ewc_params(dataset.train_data)
+                                model.register_ewc_params(dataset.train_data)
                                 last_embeddings = model.forward()
                                 last_nodes = dataset.movies.union(dataset.users)
                                 torch.save(model, 'model.pth')
