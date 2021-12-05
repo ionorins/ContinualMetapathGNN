@@ -869,7 +869,12 @@ class MovieLens(Dataset):
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging)
                 dataset_property_dict['num_nodes'] = 2902
                 ratings = ratings[ratings.timestamp >= self.start]
-                self.new_nodes = set(ratings['iid']) + set(ratings['uid'])
+                
+                movies = set(ratings['iid'])
+                users = set(ratings['uid'])
+                if len(movies.intersection(users)) > 0:
+                    print('INTERSECTION IS NOT EMPTY!!!')
+                self.new_nodes = movies.union(movies)
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
