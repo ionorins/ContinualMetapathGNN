@@ -172,6 +172,8 @@ class BaseSolver(object):
                             
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
+                            diff = torch.sort(diff)
+                            torch.set_printoptions(profile="full")
                             print('l2')
                             print(len(diff))
                             print(diff)
