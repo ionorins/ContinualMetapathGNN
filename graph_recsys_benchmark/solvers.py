@@ -175,9 +175,10 @@ class BaseSolver(object):
 
                             cos = CosineSimilarity()
                             diff = cos(last_embeddings, model.forward())
+                            print(len(diff))
                             print(diff)
-                            print('max diff')
-                            print(max(diff))
+                            print('min diff')
+                            print(min(diff))
 
                         model = model.to(self.train_args['device'])
 
