@@ -177,7 +177,7 @@ class BaseSolver(object):
                             print(diff)
         
                             print('changed:')
-                            print(len(diff>0))
+                            print(len(diff>1e-10))
 
                         model = model.to(self.train_args['device'])
 
