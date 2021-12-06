@@ -162,12 +162,9 @@ class BaseSolver(object):
                                 self.model_args['emb_dim'] = dataset.data.x.shape[1]
                             self.model_args['num_nodes'] = dataset.num_nodes
                             self.model_args['dataset'] = dataset
-                            print(f'dataset.num_nodes: {dataset.num_nodes}')
                         elif self.model_args['model_type'] == 'MF':
                             self.model_args['num_users'] = dataset.num_uids
                             self.model_args['num_items'] = dataset.num_iids
-                            print(f'dataset.num_uids: {dataset.num_uids}')
-                            print(f'dataset.num_iids: {dataset.num_iids}')
 
                         if i == 0:
                             model = self.model_class(**self.model_args)
