@@ -7,7 +7,6 @@ import pandas as pd
 from torch.utils import data
 import tqdm
 from torch.utils.data import DataLoader
-from torch.nn import CosineSimilarity
 
 from graph_recsys_benchmark.utils import *
 
@@ -118,6 +117,9 @@ class BaseSolver(object):
         if 'batches' not in self.dataset_args:
             self.dataset_args['batches'] = 3
 
+        if 'theta' not in self.dataset_args:
+            self.dataset_args['theta'] = 0.5
+
         last_embeddings = None
 
         for i in range(self.dataset_args['batches']):
@@ -160,9 +162,12 @@ class BaseSolver(object):
                                 self.model_args['emb_dim'] = dataset.data.x.shape[1]
                             self.model_args['num_nodes'] = dataset.num_nodes
                             self.model_args['dataset'] = dataset
+                            print(f'dataset.num_nodes: {dataset.num_nodes}')
                         elif self.model_args['model_type'] == 'MF':
                             self.model_args['num_users'] = dataset.num_uids
                             self.model_args['num_items'] = dataset.num_iids
+                            print(f'dataset.num_uids: {dataset.num_uids}')
+                            print(f'dataset.num_iids: {dataset.num_iids}')
 
                         if i == 0:
                             model = self.model_class(**self.model_args)
@@ -173,13 +178,8 @@ class BaseSolver(object):
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
                             diff = torch.sort(diff)
-                            torch.set_printoptions(profile="full")
-                            print('l2')
-                            print(len(diff))
-                            print(diff)
-        
-                            print('changed:')
-                            print(len(diff>1e-10))
+
+                            ind = torch.sort(diff).indices[int(0.5 * len(diff)):]
 
                         model = model.to(self.train_args['device'])
 
