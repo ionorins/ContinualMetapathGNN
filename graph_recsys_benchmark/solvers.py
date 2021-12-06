@@ -7,6 +7,7 @@ import pandas as pd
 from torch.utils import data
 import tqdm
 from torch.utils.data import DataLoader
+from torch.nn import CosineSimilarity
 
 from graph_recsys_benchmark.utils import *
 
@@ -169,8 +170,12 @@ class BaseSolver(object):
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
 
-                            diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff, dim=1)
+                            # diff = last_embeddings - model.forward()
+                            # diff = torch.norm(diff, dim=1)
+
+                            cos = CosineSimilarity()
+                            diff = cos(last_embeddings, model.forward())
+                            print(diff)
                             print('max diff')
                             print(max(diff))
 
