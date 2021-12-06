@@ -170,15 +170,23 @@ class BaseSolver(object):
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
 
-                            # diff = last_embeddings - model.forward()
-                            # diff = torch.norm(diff, dim=1)
-
                             cos = CosineSimilarity()
                             diff = cos(last_embeddings, model.forward())
+                            print('cos')
                             print(len(diff))
                             print(diff)
                             print('min diff')
                             print(min(diff))
+                            
+                            diff = last_embeddings - model.forward()
+                            diff = torch.norm(diff, dim=1)
+                            print('l2')
+                            print(len(diff))
+                            print(diff)
+                            print('min diff')
+                            print(min(diff))
+                            print('max diff')
+                            print(max(diff))
 
                         model = model.to(self.train_args['device'])
 
