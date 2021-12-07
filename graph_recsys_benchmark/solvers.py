@@ -243,7 +243,7 @@ class BaseSolver(object):
                                     m2 in dataset.movies
                                     for u, m1, m2 in dataset.train_data
                                 ]
-                                dataset.train_data = dataset.train_data[mask]
+                                # dataset.train_data = dataset.train_data[mask]
 
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')
