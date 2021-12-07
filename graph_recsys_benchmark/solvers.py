@@ -172,11 +172,11 @@ class BaseSolver(object):
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
                             
-                            diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff, dim=1)
-                            diff = torch.sort(diff)
+                            # diff = last_embeddings - model.forward()
+                            # diff = torch.norm(diff, dim=1)
+                            # diff = torch.sort(diff)
 
-                            ind = torch.sort(diff).indices[int(0.5 * len(diff)):]
+                            # ind = torch.sort(diff).indices[int(0.5 * len(diff)):]
 
                         model = model.to(self.train_args['device'])
 
@@ -237,12 +237,12 @@ class BaseSolver(object):
                                 model.train()
                                 dataset.cf_negative_sampling()
 
-                                mask = [
-                                    u.item() in dataset.users or
-                                    m1 in dataset.movies or
-                                    m2 in dataset.movies
-                                    for u, m1, m2 in dataset.train_data
-                                ]
+                                # mask = [
+                                #     u.item() in dataset.users or
+                                #     m1 in dataset.movies or
+                                #     m2 in dataset.movies
+                                #     for u, m1, m2 in dataset.train_data
+                                # ]
                                 # dataset.train_data = dataset.train_data[mask]
 
                                 print(
