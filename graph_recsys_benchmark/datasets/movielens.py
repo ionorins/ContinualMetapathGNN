@@ -790,20 +790,6 @@ class MovieLens(Dataset):
                 ratings = ratings.drop_duplicates()
                 tagging = tagging.drop_duplicates()
 
-                if self.run >= 0:
-                    min_timestamp = ratings.timestamp.min()
-                    max_timestamp = ratings.timestamp.max() + 1
-
-                    diff = (max_timestamp - min_timestamp) / self.batches
-
-                    self.start = min_timestamp + self.run * diff
-                    self.stop = self.start + diff
-
-                    # ratings = ratings[ratings.timestamp >= start]
-                    ratings = ratings[ratings.timestamp < self.stop]
-
-                    print(f'len(ratings)={len(ratings)}')
-
                 # Sync
                 movies = movies[movies.iid.isin(ratings.iid.unique())]
                 ratings = ratings[ratings.iid.isin(movies.iid.unique())]
@@ -856,6 +842,20 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'writers', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
+
+                if self.run >= 0:
+                    min_timestamp = ratings.timestamp.min()
+                    max_timestamp = ratings.timestamp.max() + 1
+
+                    diff = (max_timestamp - min_timestamp) / self.batches
+
+                    self.start = min_timestamp + self.run * diff
+                    self.stop = self.start + diff
+
+                    # ratings = ratings[ratings.timestamp >= start]
+                    ratings = ratings[ratings.timestamp < self.stop]
+
+                    print(f'len(ratings)={len(ratings)}')
 
                 # save dfs
                 print('Saving processed csv...')
