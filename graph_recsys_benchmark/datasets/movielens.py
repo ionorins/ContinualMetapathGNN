@@ -865,7 +865,6 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
-                dataset_property_dict['num_nodes'] = 2902
                 ratings = ratings[ratings.timestamp >= self.start]
                 
                 self.movies = set([
