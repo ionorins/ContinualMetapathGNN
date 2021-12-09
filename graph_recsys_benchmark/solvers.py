@@ -60,7 +60,8 @@ class BaseSolver(object):
                 dataset, u_nid
             )
             if len(pos_i_nids) == 0 or len(neg_i_nids) == 0:
-                raise ValueError("No pos or neg samples found in evaluation!")
+                print("No pos or neg samples found in evaluation!")
+                break
 
             pos_i_nid_df = pd.DataFrame(
                 {'u_nid': [u_nid for _ in range(len(pos_i_nids))], 'pos_i_nid': pos_i_nids})
