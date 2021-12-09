@@ -60,7 +60,7 @@ class BaseSolver(object):
                 dataset, u_nid
             )
             if len(pos_i_nids) == 0 or len(neg_i_nids) == 0:
-                print("No pos or neg samples found in evaluation!")
+                # print("No pos or neg samples found in evaluation!")
                 continue
 
             pos_i_nid_df = pd.DataFrame(
