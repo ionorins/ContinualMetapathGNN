@@ -176,8 +176,7 @@ class BaseSolver(object):
                             diff = torch.norm(diff, dim=1)
                             diff = torch.sort(diff)
 
-                            ind = torch.sort(
-                                diff).indices[int(0.5 * len(diff)):]
+                            ind = diff.indices[int(0.5 * len(diff)):]
 
                         model = model.to(self.train_args['device'])
 
