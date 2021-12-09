@@ -238,6 +238,9 @@ class BaseSolver(object):
                                 model.train()
                                 dataset.cf_negative_sampling()
 
+                                print(
+                                    f'len(dataset.train_data)={len(dataset.train_data)}')
+
                                 mask = [
                                     u.item() in dataset.users or
                                     m1.item() in dataset.movies or
@@ -246,6 +249,9 @@ class BaseSolver(object):
                                 ]
                                 dataset.train_data = dataset.train_data[mask]
 
+                                print(
+                                    f'len(dataset.train_data[mask])={len(dataset.train_data)}')
+
                                 for i in range(3):
                                     print(
                                         f'{i} max: {dataset.train_data[:,i].max()}')
@@ -253,9 +259,6 @@ class BaseSolver(object):
                                         f'{i} min: {dataset.train_data[:,i].min()}')
                                     uni = len(np.unique(dataset.train_data[:, i], axis=0)) != len(dataset.train_data[:, i])
                                     print(f'{i} duplicates: {uni}')
-
-                                print(
-                                    f'len(dataset.train_data)={len(dataset.train_data)}')
 
                                 train_dataloader = DataLoader(
                                     dataset,
