@@ -868,8 +868,14 @@ class MovieLens(Dataset):
                 dataset_property_dict['num_nodes'] = 2902
                 ratings = ratings[ratings.timestamp >= self.start]
                 
-                self.movies = set(ratings['iid'])
-                self.users = set(ratings['uid'])
+                self.movies = set([
+                    dataset_property_dict['e2nid_dict']['iid'][iid] 
+                        for iid in ratings.iid
+                ])
+                self.users = set([
+                    dataset_property_dict['e2nid_dict']['uid'][uid] 
+                        for uid in ratings.uid
+                ])
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
