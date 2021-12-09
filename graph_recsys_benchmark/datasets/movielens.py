@@ -123,7 +123,7 @@ def drop_infrequent_concept_from_str(df, concept_name, num_occs):
 
 
 def generate_mlsmall_hete_graph(
-        movies, ratings, tagging
+        self, movies, ratings, tagging
 ):
     def get_concept_num_from_str(df, concept_name):
         concept_strs = [concept_str.split(',') for concept_str in df[concept_name]]
@@ -138,6 +138,8 @@ def generate_mlsmall_hete_graph(
 
     unique_iids = list(np.sort(ratings.iid.unique()))
     num_iids = len(unique_iids)
+
+    ratings = ratings[ratings.timestamp < self.stop]
 
     unique_genres = list(movies.keys()[3:22])
     num_genres = len(unique_genres)
@@ -851,11 +853,6 @@ class MovieLens(Dataset):
 
                     self.start = min_timestamp + self.run * diff
                     self.stop = self.start + diff
-
-                    # ratings = ratings[ratings.timestamp >= start]
-                    ratings = ratings[ratings.timestamp < self.stop]
-
-                    print(f'len(ratings)={len(ratings)}')
 
                 # save dfs
                 print('Saving processed csv...')
