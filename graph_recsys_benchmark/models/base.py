@@ -155,7 +155,8 @@ class GraphRecsysModel(torch.nn.Module):
                 else:
                     losses.append(
                         (estimated_fisher * (param - estimated_mean) ** 2).sum())
-                # print('_buff_param_name:', _buff_param_name)
+                print("param_name", param_name)
+                print('_buff_param_name:', _buff_param_name)
             except:
                 pass
         return 1 * (self.ewc_lambda / 2) * sum(losses)
