@@ -155,8 +155,7 @@ class GraphRecsysModel(torch.nn.Module):
                 else:
                     losses.append(
                         (estimated_fisher * (param - estimated_mean) ** 2).sum())
-                print("param_name", param_name)
-                print('_buff_param_name:', _buff_param_name)
+                # print('_buff_param_name:', _buff_param_name)
             except:
                 pass
         return 1 * (self.ewc_lambda / 2) * sum(losses)
@@ -208,7 +207,6 @@ class MFRecsysModel(torch.nn.Module):
 
 class PEABaseChannel(torch.nn.Module):
     def reset_parameters(self):
-        print('PARAMETERS HAVE BEEN RESET')
         for module in self.gnn_layers:
             module.reset_parameters()
 
