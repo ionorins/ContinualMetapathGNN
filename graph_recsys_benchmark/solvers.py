@@ -373,6 +373,7 @@ class BaseSolver(object):
                         t_end = time.perf_counter()
 
                         model.register_ewc_params(dataset.train_data)
+                        print('REGISTERED EWC PARAMS')
                         last_embeddings = model.forward()
                         torch.save(model, 'model.pth')
 
