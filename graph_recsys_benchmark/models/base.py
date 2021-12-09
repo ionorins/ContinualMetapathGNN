@@ -37,7 +37,7 @@ class GraphRecsysModel(torch.nn.Module):
         self.reset_parameters()
 
         self.ewc_type = kwargs.get('ewc_type', 'ewc')
-        self.ewc_lambda = kwargs.get('ewc_lambda', 1e6)
+        self.ewc_lambda = kwargs.get('ewc_lambda', 1e3)
 
     def _init(self, **kwargs):
         raise NotImplementedError
@@ -207,6 +207,7 @@ class MFRecsysModel(torch.nn.Module):
 
 class PEABaseChannel(torch.nn.Module):
     def reset_parameters(self):
+        print('PARAMETERS HAVE BEEN RESET')
         for module in self.gnn_layers:
             module.reset_parameters()
 
