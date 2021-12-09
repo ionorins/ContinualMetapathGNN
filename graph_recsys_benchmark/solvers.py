@@ -171,12 +171,13 @@ class BaseSolver(object):
                         else:
                             model = torch.load('model.pth')
                             model.update_graph_input(dataset)
-                            
+
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
                             diff = torch.sort(diff)
 
-                            ind = torch.sort(diff).indices[int(0.5 * len(diff)):]
+                            ind = torch.sort(
+                                diff).indices[int(0.5 * len(diff)):]
 
                         model = model.to(self.train_args['device'])
 
@@ -244,6 +245,14 @@ class BaseSolver(object):
                                     for u, m1, m2 in dataset.train_data
                                 ]
                                 dataset.train_data = dataset.train_data[mask]
+
+                                for i in range(3):
+                                    print(
+                                        f'{i} max: {dataset.train_data[:,i].max()}')
+                                    print(
+                                        f'{i} min: {dataset.train_data[:,i].min()}')
+                                    uni = len(np.unique(dataset.train_data[:, i], axis=0)) != len(dataset.train_data[:, i])
+                                    print(f'{i} duplicates: {uni}')
 
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')
