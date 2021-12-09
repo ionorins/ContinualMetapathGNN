@@ -336,7 +336,7 @@ def generate_mlsmall_hete_graph(
     item_count = ratings['iid'].value_counts()
     item_nid_occs = {}
     for iid in unique_iids:
-        if iid in e2nid_dict['iid']:
+        if iid in item_count:
             item_nid_occs[e2nid_dict['iid'][iid]] = item_count[iid]
         else:
             item_nid_occs[e2nid_dict['iid'][iid]] = 0
