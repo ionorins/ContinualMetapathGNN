@@ -336,7 +336,10 @@ def generate_mlsmall_hete_graph(
     item_count = ratings['iid'].value_counts()
     item_nid_occs = {}
     for iid in unique_iids:
-        item_nid_occs[e2nid_dict['iid'][iid]] = item_count[iid]
+        if iid in e2nid_dict['iid']:
+            item_nid_occs[e2nid_dict['iid'][iid]] = item_count[iid]
+        else:
+            item_nid_occs[e2nid_dict['iid'][iid]] = 0
     dataset_property_dict['item_nid_occs'] = item_nid_occs
 
     # New functionality for pytorch geometric like dataset
