@@ -908,6 +908,17 @@ class MovieLens(Dataset):
         """
         print('CF negative sampling...')
         pos_edge_index_trans_np = self.edge_index_nps['user2item'].T
+        print('before:')
+        print(len(pos_edge_index_trans_np))
+        mask = [
+            x[0].item() in self.users 
+            or x[1].item() in self.movies 
+            for x in pos_edge_index_trans_np
+        ]
+        pos_edge_index_trans_np = pos_edge_index_trans_np[mask]
+        print('after:')
+        print(len(pos_edge_index_trans_np))
+
         num_interactions = pos_edge_index_trans_np.shape[0]
         if self.cf_loss_type == 'BCE':
             pos_samples_np = np.hstack([pos_edge_index_trans_np, np.ones((pos_edge_index_trans_np.shape[0], 1))])
@@ -954,11 +965,6 @@ class MovieLens(Dataset):
             elif self.sampling_strategy == 'unseen':
                 neg_inids = []
                 u_nids = pos_edge_index_trans_np[:, 0]
-                print(f'len(u_nids)={len(u_nids)}')
-
-                mask = [x in self.users for x in u_nids]
-                u_nids = u_nids[mask]
-                print(f'len(u_nids[mask])={len(u_nids)}')
 
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
