@@ -867,15 +867,19 @@ class MovieLens(Dataset):
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
                 ratings = ratings[ratings.timestamp < self.stop]
+
+                print(f'len(ratings): {len(ratings)}')
                 
                 self.movies = set([
                     dataset_property_dict['e2nid_dict']['iid'][iid] 
                         for iid in ratings.iid
                 ])
+                print(f'len(self.movies): {len(self.movies)}')
                 self.users = set([
                     dataset_property_dict['e2nid_dict']['uid'][uid] 
                         for uid in ratings.uid
                 ])
+                print(f'len(self.users): {len(self.users)}')
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
