@@ -116,7 +116,7 @@ class BaseSolver(object):
 
     def run(self):
         if 'batches' not in self.dataset_args:
-            self.dataset_args['batches'] = 20
+            self.dataset_args['batches'] = 3
 
         if 'theta' not in self.dataset_args:
             self.dataset_args['theta'] = 0.5

@@ -871,6 +871,9 @@ class MovieLens(Dataset):
                 print(set(ratings.iid))
                 print('users:')
                 print(set(ratings.uid))
+                print(f'self.start: {self.start}')
+                print(f'self.stop: {self.stop}')
+                print(ratings)
                 
                 self.movies = set([
                     dataset_property_dict['e2nid_dict']['iid'][iid] 
