@@ -866,6 +866,11 @@ class MovieLens(Dataset):
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
+
+                print('movies:')
+                print(set(ratings.iid))
+                print('users:')
+                print(set(ratings.uid))
                 
                 self.movies = set([
                     dataset_property_dict['e2nid_dict']['iid'][iid] 
