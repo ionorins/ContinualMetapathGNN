@@ -243,16 +243,16 @@ class BaseSolver(object):
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')
 
-                                mask = [
-                                    u.item() in dataset.users
-                                    or m1.item() in dataset.movies 
-                                    # or m2.item() in dataset.movies
-                                    for u, m1, m2 in dataset.train_data
-                                ]
-                                dataset.train_data = dataset.train_data[mask]
+                                # mask = [
+                                #     u.item() in dataset.users
+                                #     or m1.item() in dataset.movies 
+                                #     # or m2.item() in dataset.movies
+                                #     for u, m1, m2 in dataset.train_data
+                                # ]
+                                # dataset.train_data = dataset.train_data[mask]
 
-                                print(
-                                    f'len(dataset.train_data[mask])={len(dataset.train_data)}')
+                                # print(
+                                #     f'len(dataset.train_data[mask])={len(dataset.train_data)}')
 
                                 train_dataloader = DataLoader(
                                     dataset,
