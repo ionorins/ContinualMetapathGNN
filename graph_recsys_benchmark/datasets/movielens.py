@@ -139,6 +139,7 @@ def generate_mlsmall_hete_graph(
     unique_iids = list(np.sort(ratings.iid.unique()))
     num_iids = len(unique_iids)
 
+    print(f'stop: {stop}')
     ratings = ratings[ratings.timestamp < stop]
 
     unique_genres = list(movies.keys()[3:22])
