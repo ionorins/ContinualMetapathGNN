@@ -252,14 +252,6 @@ class BaseSolver(object):
                                 print(
                                     f'len(dataset.train_data[mask])={len(dataset.train_data)}')
 
-                                for i in range(3):
-                                    print(
-                                        f'{i} max: {dataset.train_data[:,i].max()}')
-                                    print(
-                                        f'{i} min: {dataset.train_data[:,i].min()}')
-                                    uni = len(np.unique(dataset.train_data[:, i], axis=0)) != len(dataset.train_data[:, i])
-                                    print(f'{i} duplicates: {uni}')
-
                                 train_dataloader = DataLoader(
                                     dataset,
                                     shuffle=True,

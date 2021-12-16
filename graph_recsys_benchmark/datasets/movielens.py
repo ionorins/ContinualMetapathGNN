@@ -139,9 +139,7 @@ def generate_mlsmall_hete_graph(
     unique_iids = list(np.sort(ratings.iid.unique()))
     num_iids = len(unique_iids)
 
-    print(f'stop: {stop}')
     ratings = ratings[ratings.timestamp < stop]
-    print(ratings)
 
     unique_genres = list(movies.keys()[3:22])
     num_genres = len(unique_genres)
@@ -869,14 +867,6 @@ class MovieLens(Dataset):
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
                 ratings = ratings[ratings.timestamp < self.stop]
-
-                print('movies:')
-                print(set(ratings.iid))
-                print('users:')
-                print(set(ratings.uid))
-                print(f'self.start: {self.start}')
-                print(f'self.stop: {self.stop}')
-                print(ratings)
                 
                 self.movies = set([
                     dataset_property_dict['e2nid_dict']['iid'][iid] 
