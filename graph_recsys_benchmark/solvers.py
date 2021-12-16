@@ -124,6 +124,8 @@ class BaseSolver(object):
         last_embeddings = None
 
         for i in range(self.dataset_args['batches']):
+            print(f'RUN {i}')
+
             import shutil
 
             shutil.rmtree('checkpoint/loggers', ignore_errors=True)
@@ -242,9 +244,9 @@ class BaseSolver(object):
                                     f'len(dataset.train_data)={len(dataset.train_data)}')
 
                                 mask = [
-                                    u.item() in dataset.users or
-                                    m1.item() in dataset.movies or
-                                    m2.item() in dataset.movies
+                                    u.item() in dataset.users
+                                    or m1.item() in dataset.movies 
+                                    # or m2.item() in dataset.movies
                                     for u, m1, m2 in dataset.train_data
                                 ]
                                 dataset.train_data = dataset.train_data[mask]
