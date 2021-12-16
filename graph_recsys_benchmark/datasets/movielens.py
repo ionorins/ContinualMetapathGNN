@@ -954,6 +954,7 @@ class MovieLens(Dataset):
             elif self.sampling_strategy == 'unseen':
                 neg_inids = []
                 u_nids = pos_edge_index_trans_np[:, 0]
+                print(f'u_nids: {u_nids}')
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
                     negative_inids = self.test_pos_unid_inid_map[u_nid] + self.neg_unid_inid_map[u_nid]
