@@ -916,7 +916,7 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
         mask = [
             x[0].item() in self.users 
-            or x[1].item() in self.movies 
+            and x[1].item() in self.movies 
             for x in pos_edge_index_trans_np
         ]
         pos_edge_index_trans_np = pos_edge_index_trans_np[mask]

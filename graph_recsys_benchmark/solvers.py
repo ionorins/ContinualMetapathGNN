@@ -116,12 +116,10 @@ class BaseSolver(object):
 
     def run(self):
         if 'batches' not in self.dataset_args:
-            self.dataset_args['batches'] = 64
+            self.dataset_args['batches'] = 3
 
         if 'theta' not in self.dataset_args:
             self.dataset_args['theta'] = 0.5
-
-        last_embeddings = None
 
         for i in range(self.dataset_args['batches']):
             print(f'RUN {i}')
@@ -173,6 +171,7 @@ class BaseSolver(object):
                             model = self.model_class(**self.model_args)
                         else:
                             model = torch.load('model.pth')
+                            last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
                             diff = last_embeddings - model.forward()
@@ -371,7 +370,6 @@ class BaseSolver(object):
 
                         model.register_ewc_params(dataset.train_data)
                         print('REGISTERED EWC PARAMS')
-                        last_embeddings = model.forward()
                         torch.save(model, 'model.pth')
 
                         HRs_per_run_np = np.vstack(
