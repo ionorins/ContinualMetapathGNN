@@ -799,7 +799,7 @@ class MovieLens(Dataset):
                 tagging = tagging[tagging.iid.isin(ratings.iid.unique())]
                 tagging = tagging[tagging.uid.isin(ratings.uid.unique())]
 
-                ratings = ratings[:len(ratings)//10]
+                # ratings = ratings[:len(ratings)//10]
 
                 # Remove infrequent movies
                 movie_count = ratings['iid'].value_counts()

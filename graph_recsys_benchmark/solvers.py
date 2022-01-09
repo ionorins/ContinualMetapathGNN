@@ -116,13 +116,13 @@ class BaseSolver(object):
 
     def run(self):
         if 'batches' not in self.dataset_args:
-            self.dataset_args['batches'] = 3
+            self.dataset_args['batches'] = 1
 
         if 'theta' not in self.dataset_args:
             self.dataset_args['theta'] = 0.5
 
         for i in range(self.dataset_args['batches']):
-            print(f'RUN {i}')
+            print(f'Timeframe {i}')
 
             import shutil
 
