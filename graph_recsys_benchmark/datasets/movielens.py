@@ -846,6 +846,8 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
 
+                ratings = ratings[:len(ratings)/10]
+
                 if self.run >= 0:
                     min_timestamp = ratings.timestamp.min()
                     max_timestamp = ratings.timestamp.max() + 1
