@@ -799,6 +799,8 @@ class MovieLens(Dataset):
                 tagging = tagging[tagging.iid.isin(ratings.iid.unique())]
                 tagging = tagging[tagging.uid.isin(ratings.uid.unique())]
 
+                ratings = ratings[:len(ratings)//10]
+
                 # Remove infrequent movies
                 movie_count = ratings['iid'].value_counts()
                 movie_count.name = 'movie_count'
@@ -845,8 +847,6 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'writers', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
-
-                ratings = ratings[:len(ratings)//10]
 
                 if self.run >= 0:
                     min_timestamp = ratings.timestamp.min()
