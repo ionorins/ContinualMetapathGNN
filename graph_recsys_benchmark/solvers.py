@@ -176,9 +176,16 @@ class BaseSolver(object):
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
-                            diff = torch.sort(diff)
+                            ind = diff.nonzero(as_tuple=True)[0]
 
-                            ind = diff.indices[int(0.5 * len(diff)):]
+                            print(f'dataset.users={dataset.users}')
+                            print(f'dataset.movies={dataset.movies}')
+
+                            for v in ind:
+                                if v < dataset.num_uids:
+                                    dataset.users.add(v)
+                                else:
+                                    dataset.movies.add(v - dataset.num_uids)
 
                         model = model.to(self.train_args['device'])
 
