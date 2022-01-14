@@ -185,7 +185,7 @@ class BaseSolver(object):
                                 if v < dataset.num_uids:
                                     dataset.users.add(v)
                                 else:
-                                    dataset.movies.add(v - dataset.num_uids)
+                                    dataset.movies.add(v)
 
                         model = model.to(self.train_args['device'])
 
