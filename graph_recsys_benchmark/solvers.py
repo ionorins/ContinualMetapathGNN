@@ -116,7 +116,7 @@ class BaseSolver(object):
 
     def run(self):
         if 'batches' not in self.dataset_args:
-            self.dataset_args['batches'] = 3
+            self.dataset_args['batches'] = 1000
 
         if 'theta' not in self.dataset_args:
             self.dataset_args['theta'] = 0.5
@@ -183,8 +183,12 @@ class BaseSolver(object):
 
                             for v in ind:
                                 if v < dataset.num_uids:
+                                    if v not in dataset.users:
+                                        print ('ALEEERTT')
                                     dataset.users.add(v)
                                 else:
+                                    if v not in dataset.movies:
+                                        print ('ALEEERTT')
                                     dataset.movies.add(v)
 
                         model = model.to(self.train_args['device'])
