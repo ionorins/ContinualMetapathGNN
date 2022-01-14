@@ -178,8 +178,8 @@ class BaseSolver(object):
                             diff = torch.norm(diff, dim=1)
                             ind = diff.nonzero(as_tuple=True)[0]
 
-                            print(f'dataset.users={dataset.users}')
-                            print(f'dataset.movies={dataset.movies}')
+                            # print(f'dataset.users={dataset.users}')
+                            # print(f'dataset.movies={dataset.movies}')
 
                             for v in ind:
                                 if v < dataset.num_uids:
