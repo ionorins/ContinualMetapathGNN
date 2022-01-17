@@ -176,6 +176,9 @@ class BaseSolver(object):
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
+
+                            print(diff)
+
                             ind = diff.nonzero(as_tuple=True)[0]
 
                             # print(f'dataset.users={dataset.users}')
