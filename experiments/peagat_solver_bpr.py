@@ -79,7 +79,7 @@ dataset_args = {
     'cf_loss_type': LOSS_TYPE, 'type': GRAPH_TYPE,
     'sampling_strategy': args.sampling_strategy, 'entity_aware': args.entity_aware.lower() == 'true',
     'model': MODEL,
-    'num_timeframes': args.num_timeframes, 'end_timeframe': args.end_timeframe
+    'num_timeframes': args.num_timeframes, 'end_timeframe': args.end_timeframe, 'start_timeframe': args.start_timeframe
 }
 model_args = {
     'model_type': MODEL_TYPE,
