@@ -115,10 +115,13 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
-        if 'batches' not in self.dataset_args:
-            self.dataset_args['batches'] = 1
+        if 'end_timeframe' not in self.dataset_args:
+            self.dataset_args['end_timeframe'] = self.dataset_args['num_timeframes']
 
-        for i in range(self.dataset_args['batches']):
+        print(f"num_timeframes: {self.dataset_args['num_timeframes']}")
+        print(f"end_timeframe: {self.dataset_args['end_timeframe']}")
+
+        for i in range(self.dataset_args['num_timeframes']):
             print(f'Timeframe {i}')
 
             import shutil
@@ -137,7 +140,7 @@ class BaseSolver(object):
                 load_global_logger(global_logger_file_path)
 
             # Create the dataset
-            self.dataset_args['run'] = i
+            self.dataset_args['timeframe'] = i
 
             dataset = load_dataset(self.dataset_args)
 
@@ -183,12 +186,8 @@ class BaseSolver(object):
 
                             for v in ind:
                                 if v < dataset.num_uids:
-                                    if v not in dataset.users:
-                                        print ('ALEEERTT')
                                     dataset.users.add(v)
                                 else:
-                                    if v not in dataset.movies:
-                                        print ('ALEEERTT')
                                     dataset.movies.add(v)
 
                         model = model.to(self.train_args['device'])

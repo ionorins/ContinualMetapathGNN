@@ -610,8 +610,8 @@ class MovieLens(Dataset):
         self.sampling_strategy = kwargs['sampling_strategy']
         self.cf_loss_type = kwargs['cf_loss_type']
 
-        self.run = kwargs['run']
-        self.batches = kwargs['batches']
+        self.timeframe = kwargs['timeframe']
+        self.num_timeframes = kwargs['num_timeframes']
 
         super(MovieLens, self).__init__(root, transform, pre_transform, pre_filter)
 
@@ -848,13 +848,13 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
 
-                if self.run >= 0:
+                if self.timeframe >= 0:
                     min_timestamp = ratings.timestamp.min()
                     max_timestamp = ratings.timestamp.max() + 1
 
-                    diff = (max_timestamp - min_timestamp) / self.batches
+                    diff = (max_timestamp - min_timestamp) / self.num_timeframes
 
-                    self.start = min_timestamp + self.run * diff
+                    self.start = min_timestamp + self.timeframe * diff
                     self.stop = self.start + diff
 
                 # save dfs
