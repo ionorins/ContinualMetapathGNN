@@ -121,7 +121,7 @@ class BaseSolver(object):
         print(f"num_timeframes: {self.dataset_args['num_timeframes']}")
         print(f"end_timeframe: {self.dataset_args['end_timeframe']}")
 
-        for i in range(self.dataset_args['num_timeframes']):
+        for i in range(self.dataset_args['end_timeframe']):
             print(f'Timeframe {i}')
 
             import shutil
