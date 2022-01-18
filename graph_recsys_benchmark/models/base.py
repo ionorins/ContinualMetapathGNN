@@ -36,9 +36,6 @@ class GraphRecsysModel(torch.nn.Module):
 
         self.reset_parameters()
 
-        self.ewc_type = kwargs.get('ewc_type', 'ewc')
-        self.ewc_lambda = kwargs.get('ewc_lambda', 80)
-
     def _init(self, **kwargs):
         raise NotImplementedError
 

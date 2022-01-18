@@ -54,6 +54,8 @@ parser.add_argument('--save_every_epoch', type=int, default=26, help='')        
 parser.add_argument('--metapath_test', type=str, default='true', help='')
 parser.add_argument('--num_timeframes', type=int, default=1, help='')
 parser.add_argument('--end_timeframe', type=int, help='')
+parser.add_argument('--ewc_type', type=str, default='ewc', help='')
+parser.add_argument('--ewc_lambda', type=int, default=80, help='')
 
 args = parser.parse_args()
 
@@ -86,7 +88,8 @@ model_args = {
     'num_heads': args.num_heads, 'meta_path_steps': [int(i) for i in args.meta_path_steps.split(',')],
     'channel_aggr': args.channel_aggr,
     'entity_aware': args.entity_aware.lower() == 'true',
-    'entity_aware_coff': args.entity_aware_coff
+    'entity_aware_coff': args.entity_aware_coff,
+    'ewc_type': args.ewc_type, 'ewc_lambda': args.ewc_lambda
 }
 path_args = model_args.copy()
 path_args['meta_path_steps'] = len(path_args['meta_path_steps'])
