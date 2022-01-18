@@ -75,7 +75,8 @@ dataset_args = {
     'num_core': args.num_core, 'num_feat_core': args.num_feat_core,
     'cf_loss_type': LOSS_TYPE, 'type': GRAPH_TYPE,
     'sampling_strategy': args.sampling_strategy, 'entity_aware': args.entity_aware.lower() == 'true',
-    'model': MODEL
+    'model': MODEL,
+    'num_timeframes': args.num_timeframes, 'end_timeframe': args.end_timeframe
 }
 model_args = {
     'model_type': MODEL_TYPE,
