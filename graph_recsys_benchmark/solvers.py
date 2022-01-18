@@ -115,7 +115,7 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
-        if 'end_timeframe' not in self.dataset_args:
+        if self.dataset_args['end_timeframe'] is None:
             self.dataset_args['end_timeframe'] = self.dataset_args['num_timeframes']
 
         print(f"num_timeframes: {self.dataset_args['num_timeframes']}")
