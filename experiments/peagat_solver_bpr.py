@@ -54,6 +54,7 @@ parser.add_argument('--save_every_epoch', type=int, default=26, help='')        
 parser.add_argument('--metapath_test', type=str, default='true', help='')
 parser.add_argument('--num_timeframes', type=int, default=1, help='')
 parser.add_argument('--end_timeframe', type=int, help='')
+parser.add_argument('--start_timeframe', type=int, default=0, help='')
 parser.add_argument('--ewc_type', type=str, default='ewc', help='')
 parser.add_argument('--ewc_lambda', type=int, default=80, help='')
 
