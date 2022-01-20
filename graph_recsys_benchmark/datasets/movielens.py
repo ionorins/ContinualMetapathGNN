@@ -612,7 +612,7 @@ class MovieLens(Dataset):
 
         self.timeframe = kwargs['timeframe']
         self.num_timeframes = kwargs['num_timeframes']
-        self.num_timeframes = kwargs['equal_timespan_timeframes']
+        self.equal_timespan_timeframes = kwargs['equal_timespan_timeframes']
 
         super(MovieLens, self).__init__(root, transform, pre_transform, pre_filter)
 
