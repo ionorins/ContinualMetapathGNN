@@ -849,13 +849,18 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
 
                 if self.timeframe >= 0:
-                    min_timestamp = ratings.timestamp.min()
-                    max_timestamp = ratings.timestamp.max() + 1
+                    if self.equal_timespan_timeframes:
+                        min_timestamp = ratings.timestamp.min()
+                        max_timestamp = ratings.timestamp.max() + 1
+                    else:
+                        timeframe_size = len(ratings) / self.num_timeframes
+                        min_timestamp = ratings[self.timeframe * timeframe_size]['timestamp']
+                        max_timestamp = ratings[(self.timeframe + 1) * timeframe_size]['timestamp']
 
                     diff = (max_timestamp - min_timestamp) / self.num_timeframes
-
                     self.start = min_timestamp + self.timeframe * diff
                     self.stop = self.start + diff
+
 
                 # save dfs
                 print('Saving processed csv...')
