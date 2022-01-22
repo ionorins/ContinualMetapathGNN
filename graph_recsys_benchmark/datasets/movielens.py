@@ -881,9 +881,10 @@ class MovieLens(Dataset):
                 print(self.start)
                 print(self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
+                print(ratings.timestamp >= self.start)
                 print(f'len(ratings): {len(ratings)}')
                 ratings = ratings[ratings.timestamp < self.stop]
-
+                print(ratings.timestamp < self.stop)
                 print(f'len(ratings): {len(ratings)}')
 
                 if len(ratings) == 0:
