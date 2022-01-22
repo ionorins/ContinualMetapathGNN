@@ -859,11 +859,10 @@ class MovieLens(Dataset):
                         self.stop = self.start + diff
 
                     else:
+                        print('NOT equal_timespan_timeframes')
                         timeframe_size = len(ratings) / self.num_timeframes
                         self.start = ratings[self.timeframe * timeframe_size]['timestamp']
                         self.stop = ratings[(self.timeframe + 1) * timeframe_size]['timestamp'] + 0.5
-
-                    
 
                 # save dfs
                 print('Saving processed csv...')
