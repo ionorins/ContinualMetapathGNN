@@ -61,8 +61,6 @@ parser.add_argument('--ewc_lambda', type=int, default=80, help='')
 
 args = parser.parse_args()
 
-print(args.equal_timespan_timeframes)
-exit()
 # Setup data and weights file path
 data_folder, weights_folder, logger_folder = \
     get_folder_path(model=MODEL, dataset=args.dataset + args.dataset_name, loss_type=LOSS_TYPE)
