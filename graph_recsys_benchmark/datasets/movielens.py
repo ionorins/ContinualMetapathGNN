@@ -877,6 +877,9 @@ class MovieLens(Dataset):
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
                 print(f'len(ratings): {len(ratings)}')
+                print(ratings)
+                print(self.start)
+                print(self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
                 ratings = ratings[ratings.timestamp < self.stop]
 
