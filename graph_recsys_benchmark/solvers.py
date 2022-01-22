@@ -228,7 +228,7 @@ class BaseSolver(object):
                                 f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
-                                continue
+                                break
 
                             logger_file.write(
                                 'Initial performance HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
@@ -489,6 +489,9 @@ class BaseSolver(object):
                             )
                         )
                         instantwrite(logger_file)
+
+                if dataset.skip_timeframe:
+                    continue
 
                 print(
                     'Overall HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
