@@ -517,3 +517,5 @@ class BaseSolver(object):
                     )
                 )
                 instantwrite(logger_file)
+
+                print(HRs_per_run_np.mean(axis=0)[5])
