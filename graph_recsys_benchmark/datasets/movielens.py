@@ -859,10 +859,9 @@ class MovieLens(Dataset):
                         self.stop = self.start + diff
 
                     else:
-                        print('NOT equal_timespan_timeframes')
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
-                        stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings))
+                        stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings) - 1)
                         print(f'selecting {start_id} - {stop_id}')
                         self.start = ratings.iloc[start_id]['timestamp']
                         self.stop = ratings.iloc[stop_id]['timestamp'] + 0.5
