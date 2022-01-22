@@ -518,6 +518,6 @@ class BaseSolver(object):
                 )
                 instantwrite(logger_file)
 
-                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.txt', 'w')
-                f.write(str(HRs_per_run_np.mean(axis=0)[5]) + '\n')
+                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'w')
+                f.write(f'{i},{str(HRs_per_run_np.mean(axis=0)[5])}\n')
                 f.close()
