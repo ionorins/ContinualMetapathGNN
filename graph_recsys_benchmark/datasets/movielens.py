@@ -877,6 +877,11 @@ class MovieLens(Dataset):
                 ratings = ratings[ratings.timestamp < self.stop]
 
                 print(f'len(ratings): {len(ratings)}')
+
+                if len(ratings) == 0:
+                    self.skip_timeframe = True
+                else:
+                    self.skip_timeframe = False
                 
                 self.movies = set([
                     dataset_property_dict['e2nid_dict']['iid'][iid] 
