@@ -859,6 +859,7 @@ class MovieLens(Dataset):
                         self.stop = self.start + diff
 
                     else:
+                        ratings = ratings.sort_values('timestamp')
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
                         stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings)) - 1
@@ -876,15 +877,9 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
-                print(f'len(ratings): {len(ratings)}')
-                print(ratings)
-                print(self.start)
-                print(self.stop)
                 ratings = ratings[ratings.timestamp >= self.start]
-                print(ratings.timestamp >= self.start)
-                print(f'len(ratings): {len(ratings)}')
                 ratings = ratings[ratings.timestamp < self.stop]
-                print(ratings.timestamp < self.stop)
+
                 print(f'len(ratings): {len(ratings)}')
 
                 if len(ratings) == 0:
