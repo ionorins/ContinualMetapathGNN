@@ -856,7 +856,7 @@ class MovieLens(Dataset):
                     else:
                         timeframe_size = len(ratings) / self.num_timeframes
                         min_timestamp = ratings[self.timeframe * timeframe_size]['timestamp']
-                        max_timestamp = ratings[(self.timeframe + 1) * timeframe_size]['timestamp']
+                        max_timestamp = ratings[(self.timeframe + 1) * timeframe_size]['timestamp'] + 1
 
                     diff = (max_timestamp - min_timestamp) / self.num_timeframes
                     self.start = min_timestamp + self.timeframe * diff
