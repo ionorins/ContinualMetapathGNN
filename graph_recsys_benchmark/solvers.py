@@ -241,71 +241,72 @@ class BaseSolver(object):
                         t_start = time.perf_counter()
 
                         if start_epoch <= self.train_args['epochs']:
-                            # Start training model
-                            for epoch in range(start_epoch, self.train_args['epochs'] + 1):
-                                loss_per_batch = []
-                                model.train()
-                                dataset.cf_negative_sampling()
+                            if not dataset.skip_timeframe:
+                                # Start training model
+                                for epoch in range(start_epoch, self.train_args['epochs'] + 1):
+                                    loss_per_batch = []
+                                    model.train()
+                                    dataset.cf_negative_sampling()
 
-                                print(
-                                    f'len(dataset.train_data)={len(dataset.train_data)}')
+                                    print(
+                                        f'len(dataset.train_data)={len(dataset.train_data)}')
 
-                                train_dataloader = DataLoader(
-                                    dataset,
-                                    shuffle=True,
-                                    batch_size=self.train_args['batch_size'],
-                                    num_workers=self.train_args['num_workers']
-                                )
-                                train_bar = tqdm.tqdm(
-                                    train_dataloader, total=len(train_dataloader))
-
-                                for _, batch in enumerate(train_bar):
-                                    if self.model_args['model_type'] == 'MF':
-                                        if self.model_args['loss_type'] == 'BCE':
-                                            batch[:, 0] -= dataset.e2nid_dict['uid'][0]
-                                            batch[:, 1] -= dataset.e2nid_dict['iid'][0]
-                                        elif self.model_args['loss_type'] == 'BPR':
-                                            batch[:, 0] -= dataset.e2nid_dict['uid'][0]
-                                            batch[:, 1:] -= dataset.e2nid_dict['iid'][0]
-                                    batch = batch.to(self.train_args['device'])
-
-                                    optimizer.zero_grad()
-                                    loss = model.loss(batch)
-                                    loss.backward()
-                                    optimizer.step()
-
-                                    loss_per_batch.append(
-                                        loss.detach().cpu().item())
-                                    train_loss = np.mean(loss_per_batch)
-                                    train_bar.set_description(
-                                        'Run: {}, epoch: {}, train loss: {:.4f}'.format(
-                                            run, epoch, train_loss)
+                                    train_dataloader = DataLoader(
+                                        dataset,
+                                        shuffle=True,
+                                        batch_size=self.train_args['batch_size'],
+                                        num_workers=self.train_args['num_workers']
                                     )
+                                    train_bar = tqdm.tqdm(
+                                        train_dataloader, total=len(train_dataloader))
 
-                                if model.__class__.__name__[:3] == 'PEA' and self.train_args['metapath_test']:
-                                    if (self.dataset_args['dataset'] == 'Movielens' and epoch == 30) or (self.dataset_args['dataset'] == 'Yelp' and epoch == 20):
-                                        for metapath_idx in range(len(self.model_args['meta_path_steps'])):
-                                            model.eval(metapath_idx)
-                                            HRs, NDCGs, AUC, eval_loss = self.metrics(
-                                                run, epoch, model, dataset)
-                                            print(
-                                                'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
-                                                'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, '
-                                                'train loss: {:.4f}, eval loss: {:.4f} \n'.format(
-                                                    run, epoch, metapath_idx, HRs[0], HRs[5], HRs[10], HRs[
-                                                        15], NDCGs[0], NDCGs[5], NDCGs[10], NDCGs[15],
-                                                    AUC[0], train_loss, eval_loss[0]
+                                    for _, batch in enumerate(train_bar):
+                                        if self.model_args['model_type'] == 'MF':
+                                            if self.model_args['loss_type'] == 'BCE':
+                                                batch[:, 0] -= dataset.e2nid_dict['uid'][0]
+                                                batch[:, 1] -= dataset.e2nid_dict['iid'][0]
+                                            elif self.model_args['loss_type'] == 'BPR':
+                                                batch[:, 0] -= dataset.e2nid_dict['uid'][0]
+                                                batch[:, 1:] -= dataset.e2nid_dict['iid'][0]
+                                        batch = batch.to(self.train_args['device'])
+
+                                        optimizer.zero_grad()
+                                        loss = model.loss(batch)
+                                        loss.backward()
+                                        optimizer.step()
+
+                                        loss_per_batch.append(
+                                            loss.detach().cpu().item())
+                                        train_loss = np.mean(loss_per_batch)
+                                        train_bar.set_description(
+                                            'Run: {}, epoch: {}, train loss: {:.4f}'.format(
+                                                run, epoch, train_loss)
+                                        )
+
+                                    if model.__class__.__name__[:3] == 'PEA' and self.train_args['metapath_test']:
+                                        if (self.dataset_args['dataset'] == 'Movielens' and epoch == 30) or (self.dataset_args['dataset'] == 'Yelp' and epoch == 20):
+                                            for metapath_idx in range(len(self.model_args['meta_path_steps'])):
+                                                model.eval(metapath_idx)
+                                                HRs, NDCGs, AUC, eval_loss = self.metrics(
+                                                    run, epoch, model, dataset)
+                                                print(
+                                                    'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
+                                                    'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, '
+                                                    'train loss: {:.4f}, eval loss: {:.4f} \n'.format(
+                                                        run, epoch, metapath_idx, HRs[0], HRs[5], HRs[10], HRs[
+                                                            15], NDCGs[0], NDCGs[5], NDCGs[10], NDCGs[15],
+                                                        AUC[0], train_loss, eval_loss[0]
+                                                    )
                                                 )
-                                            )
-                                            logger_file.write(
-                                                'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
-                                                'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, '
-                                                'train loss: {:.4f}, eval loss: {:.4f} \n'.format(
-                                                    run, epoch, metapath_idx, HRs[0], HRs[5], HRs[10], HRs[
-                                                        15], NDCGs[0], NDCGs[5], NDCGs[10], NDCGs[15],
-                                                    AUC[0], train_loss, eval_loss[0]
+                                                logger_file.write(
+                                                    'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
+                                                    'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, '
+                                                    'train loss: {:.4f}, eval loss: {:.4f} \n'.format(
+                                                        run, epoch, metapath_idx, HRs[0], HRs[5], HRs[10], HRs[
+                                                            15], NDCGs[0], NDCGs[5], NDCGs[10], NDCGs[15],
+                                                        AUC[0], train_loss, eval_loss[0]
+                                                    )
                                                 )
-                                            )
 
                                 model.eval()
                                 with torch.no_grad():
@@ -518,6 +519,6 @@ class BaseSolver(object):
                 )
                 instantwrite(logger_file)
 
-                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'w')
+                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'a')
                 f.write(f'{i},{str(HRs_per_run_np.mean(axis=0)[5])}\n')
                 f.close()
