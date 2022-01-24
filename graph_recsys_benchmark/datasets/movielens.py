@@ -881,6 +881,7 @@ class MovieLens(Dataset):
                 ratings = ratings[ratings.timestamp < self.stop]
 
                 print(f'len(ratings): {len(ratings)}')
+                print(ratings)
 
                 if len(ratings) == 0:
                     self.skip_timeframe = True
@@ -892,11 +893,13 @@ class MovieLens(Dataset):
                         for iid in ratings.iid
                 ])
                 print(f'len(self.movies): {len(self.movies)}')
+                print(self.movies)
                 self.users = set([
                     dataset_property_dict['e2nid_dict']['uid'][uid] 
                         for uid in ratings.uid
                 ])
                 print(f'len(self.users): {len(self.users)}')
+                print(self.users)
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
