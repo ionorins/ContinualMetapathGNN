@@ -312,7 +312,6 @@ def generate_mlsmall_hete_graph(
         neg_uid_inids = [e2nid_dict['iid'][iid] for iid in neg_uid_iids]
 
         test_pos_unid_inid_map[unid] = test_pos_uid_inids
-        print(f'test_pos_uid_inids: {test_pos_uid_inids}')
         neg_unid_inid_map[unid] = neg_uid_inids
 
         unid_user2item_edge_index_np = np.array(
