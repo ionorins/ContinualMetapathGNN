@@ -883,7 +883,7 @@ class MovieLens(Dataset):
                 print(f'len(ratings): {len(ratings)}')
                 print(ratings)
 
-                if len(ratings) == 0:
+                if len(ratings) < 2:
                     self.skip_timeframe = True
                 else:
                     self.skip_timeframe = False
