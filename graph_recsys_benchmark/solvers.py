@@ -168,22 +168,22 @@ class BaseSolver(object):
                             model = self.model_class(**self.model_args)
                         else:
                             model = torch.load('model.pth')
-                            last_embeddings = model.forward()
-                            model.update_graph_input(dataset)
+                            # last_embeddings = model.forward()
+                            # model.update_graph_input(dataset)
 
-                            diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff, dim=1)
+                            # diff = last_embeddings - model.forward()
+                            # diff = torch.norm(diff, dim=1)
 
-                            ind = diff.nonzero(as_tuple=True)[0]
+                            # ind = diff.nonzero(as_tuple=True)[0]
 
-                            # print(f'dataset.users={dataset.users}')
-                            # print(f'dataset.movies={dataset.movies}')
+                            # # print(f'dataset.users={dataset.users}')
+                            # # print(f'dataset.movies={dataset.movies}')
 
-                            for v in ind:
-                                if v < dataset.num_uids:
-                                    dataset.users.add(v)
-                                else:
-                                    dataset.movies.add(v)
+                            # for v in ind:
+                            #     if v < dataset.num_uids:
+                            #         dataset.users.add(v)
+                            #     else:
+                            #         dataset.movies.add(v)
 
                         model = model.to(self.train_args['device'])
 
