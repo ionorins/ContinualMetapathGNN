@@ -164,9 +164,9 @@ class BaseSolver(object):
                             self.model_args['num_users'] = dataset.num_uids
                             self.model_args['num_items'] = dataset.num_iids
 
-                        # if i == 0:
-                        if True:
+                        if i == 0:
                             model = self.model_class(**self.model_args)
+                            diff = None
                         else:
                             model = torch.load('model.pth')
                             last_embeddings = model.forward()
@@ -174,17 +174,6 @@ class BaseSolver(object):
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
-
-                            ind = diff.nonzero(as_tuple=True)[0]
-
-                            # print(f'dataset.users={dataset.users}')
-                            # print(f'dataset.movies={dataset.movies}')
-
-                            for v in ind:
-                                if v < dataset.num_uids:
-                                    dataset.users.add(v)
-                                else:
-                                    dataset.movies.add(v)
 
                         model = model.to(self.train_args['device'])
 
@@ -250,7 +239,7 @@ class BaseSolver(object):
                             for epoch in range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
                                 model.train()
-                                dataset.cf_negative_sampling()
+                                dataset.cf_negative_sampling(diff)
 
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')

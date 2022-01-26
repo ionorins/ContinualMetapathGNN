@@ -880,26 +880,13 @@ class MovieLens(Dataset):
                 ratings = ratings[ratings.timestamp >= self.start]
                 ratings = ratings[ratings.timestamp < self.stop]
 
+                self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
-                print(ratings)
 
-                if len(ratings) < 2:
+                if len(ratings) == 0:
                     self.skip_timeframe = True
                 else:
                     self.skip_timeframe = False
-                
-                self.movies = set([
-                    dataset_property_dict['e2nid_dict']['iid'][iid] 
-                        for iid in ratings.iid
-                ])
-                print(f'len(self.movies): {len(self.movies)}')
-                print(self.movies)
-                self.users = set([
-                    dataset_property_dict['e2nid_dict']['uid'][uid] 
-                        for uid in ratings.uid
-                ])
-                print(f'len(self.users): {len(self.users)}')
-                print(self.users)
             else:
                 raise NotImplementedError
             with open(self.processed_paths[0], 'wb') as f:
@@ -926,7 +913,7 @@ class MovieLens(Dataset):
         self.train_data = train_data_t[shuffle_idx]
         self.train_data_length = train_data_t.shape[0]
 
-    def cf_negative_sampling(self):
+    def cf_negative_sampling(self, diff):
         """
         Replace positive items with random/unseen items
         """
@@ -934,12 +921,16 @@ class MovieLens(Dataset):
         pos_edge_index_trans_np = self.edge_index_nps['user2item'].T
         print('before:')
         print(len(pos_edge_index_trans_np))
-        mask = [
-            x[0].item() in self.users 
-            and x[1].item() in self.movies 
-            for x in pos_edge_index_trans_np
-        ]
-        pos_edge_index_trans_np = pos_edge_index_trans_np[mask]
+
+        if diff is not None:
+            pos_edge_index_trans_np = sorted(
+                pos_edge_index_trans_np, 
+                key=lambda e: torch.norm(e[0] + e[1])
+            )
+
+            no_samples = min(len(pos_edge_index_trans_np), self.len_ratings)
+            pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+
         print('after:')
         print(len(pos_edge_index_trans_np))
 
