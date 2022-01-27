@@ -923,6 +923,7 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
 
         def h(e):
+            print(e)
             e0 = diff[e[0].item()]
             e1 = diff[e[1].item()]
             he = e0 + e1
