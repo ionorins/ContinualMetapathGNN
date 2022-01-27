@@ -239,7 +239,7 @@ class BaseSolver(object):
                             for epoch in range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
                                 model.train()
-                                dataset.cf_negative_sampling(diff)
+                                dataset.cf_negative_sampling(diff, self.train_args['theta'])
 
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')

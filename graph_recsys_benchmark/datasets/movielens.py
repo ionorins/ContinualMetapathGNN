@@ -913,7 +913,7 @@ class MovieLens(Dataset):
         self.train_data = train_data_t[shuffle_idx]
         self.train_data_length = train_data_t.shape[0]
 
-    def cf_negative_sampling(self, diff):
+    def cf_negative_sampling(self, diff, theta):
         """
         Replace positive items with random/unseen items
         """
@@ -935,7 +935,7 @@ class MovieLens(Dataset):
                 reverse=True,
             ))
 
-            no_samples = min(len(pos_edge_index_trans_np), self.len_ratings)
+            no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
             pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
 
         print('after:')
