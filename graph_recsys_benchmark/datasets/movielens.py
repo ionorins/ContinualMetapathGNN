@@ -923,8 +923,8 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
 
         def h(e):
-            h0 = diff[e[0].item().int()]
-            h1 = diff[e[1].item().int()]
+            h0 = diff[int(e[0].item())]
+            h1 = diff[int(e[1].item())]
             return torch.norm(h0 + h1)
 
 
