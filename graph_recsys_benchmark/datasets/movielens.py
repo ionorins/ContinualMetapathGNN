@@ -930,7 +930,7 @@ class MovieLens(Dataset):
 
         if diff is not None:
             print(type(pos_edge_index_trans_np))
-            pos_edge_index_trans_np = torch.tensor(sorted(
+            pos_edge_index_trans_np = np.array(sorted(
                 pos_edge_index_trans_np, 
                 key=h,
                 reverse=True,
