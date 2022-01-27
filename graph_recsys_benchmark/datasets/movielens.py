@@ -932,7 +932,8 @@ class MovieLens(Dataset):
             print(pos_edge_index_trans_np)
             pos_edge_index_trans_np = torch.tensor(sorted(
                 pos_edge_index_trans_np, 
-                key=h
+                key=h,
+                reverse=True,
             ))
             print(pos_edge_index_trans_np)
 
