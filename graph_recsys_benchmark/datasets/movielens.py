@@ -922,10 +922,18 @@ class MovieLens(Dataset):
         print('before:')
         print(len(pos_edge_index_trans_np))
 
+        def h(e):
+            e0 = diff[e[0].item()]
+            e1 = diff[e[1].item()]
+            he = e0 + e1
+            print(he)
+            return torch.norm(he)
+
+
         if diff is not None:
             pos_edge_index_trans_np = sorted(
                 pos_edge_index_trans_np, 
-                key=lambda e: torch.norm(diff[e[0].item()] + diff[e[1].item()])
+                key=h)
             )
 
             no_samples = min(len(pos_edge_index_trans_np), self.len_ratings)
