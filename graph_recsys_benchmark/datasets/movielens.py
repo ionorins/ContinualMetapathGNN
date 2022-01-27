@@ -929,10 +929,10 @@ class MovieLens(Dataset):
 
 
         if diff is not None:
-            pos_edge_index_trans_np = sorted(
+            pos_edge_index_trans_np = torch.tensor(sorted(
                 pos_edge_index_trans_np, 
                 key=h
-            )
+            ))
 
             no_samples = min(len(pos_edge_index_trans_np), self.len_ratings)
             pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
