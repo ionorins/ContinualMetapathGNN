@@ -215,7 +215,7 @@ class BaseSolver(object):
                             )
 
                             if dataset.skip_timeframe:
-                                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'a')
+                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
                                 break
@@ -515,6 +515,6 @@ class BaseSolver(object):
                 )
                 instantwrite(logger_file)
 
-                f = open(f'HRs/{self.dataset_args["num_timeframes"]}.csv', 'a')
+                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                 f.write(f'{i},{str(HRs_per_run_np[-1][5])}\n')
                 f.close()
