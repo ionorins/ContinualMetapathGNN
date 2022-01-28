@@ -52,6 +52,7 @@ parser.add_argument('--early_stopping', type=int, default=20, help='')
 parser.add_argument('--save_epochs', type=str, default='5,10,15,20,25', help='')
 parser.add_argument('--save_every_epoch', type=int, default=26, help='')        #26(for MovieLens), 16(only for Yelp)
 parser.add_argument('--metapath_test', type=str, default='true', help='')
+parser.add_argument('--continual_aspect', type=str, default='continual', help='')
 parser.add_argument('--equal_timespan_timeframes', type=str, default='false', help='')
 parser.add_argument('--num_timeframes', type=int, default=1, help='')
 parser.add_argument('--end_timeframe', type=int, help='')
@@ -81,7 +82,8 @@ dataset_args = {
     'sampling_strategy': args.sampling_strategy, 'entity_aware': args.entity_aware.lower() == 'true',
     'model': MODEL,
     'equal_timespan_timeframes': args.equal_timespan_timeframes.lower() == 'true', 'num_timeframes': args.num_timeframes, 
-    'end_timeframe': args.end_timeframe, 'start_timeframe': args.start_timeframe
+    'end_timeframe': args.end_timeframe, 'start_timeframe': args.start_timeframe,
+    'continual_aspect': args.continual_aspect,
 }
 model_args = {
     'model_type': MODEL_TYPE,

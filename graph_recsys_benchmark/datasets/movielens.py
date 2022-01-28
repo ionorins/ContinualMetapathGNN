@@ -123,7 +123,7 @@ def drop_infrequent_concept_from_str(df, concept_name, num_occs):
 
 
 def generate_mlsmall_hete_graph(
-        movies, ratings, tagging, stop
+        movies, ratings, tagging, start, stop, single
 ):
     def get_concept_num_from_str(df, concept_name):
         concept_strs = [concept_str.split(',') for concept_str in df[concept_name]]
@@ -294,6 +294,10 @@ def generate_mlsmall_hete_graph(
 
     rating_np = np.zeros((0,))
     user2item_edge_index_np = np.zeros((2, 0))
+
+    if single:
+        ratings = ratings[ratings.timestamp >= start]
+
     sorted_ratings = ratings.sort_values('uid')
     pbar = tqdm.tqdm(unique_uids, total=len(unique_uids))
     for uid in pbar:
@@ -614,6 +618,8 @@ class MovieLens(Dataset):
         self.num_timeframes = kwargs['num_timeframes']
         self.equal_timespan_timeframes = kwargs['equal_timespan_timeframes']
 
+        self.continual_aspect = kwargs['continual_aspect']
+
         super(MovieLens, self).__init__(root, transform, pre_transform, pre_filter)
 
         with open(self.processed_paths[0], 'rb') as f:  # Read the class property
@@ -876,14 +882,19 @@ class MovieLens(Dataset):
 
             # Generate and save graph
             if self.type == 'hete':
-                dataset_property_dict = generate_mlsmall_hete_graph(movies, ratings, tagging, self.stop)
-                ratings = ratings[ratings.timestamp >= self.start]
+                dataset_property_dict = generate_mlsmall_hete_graph(
+                    movies, ratings, tagging, self.start, self.stop, self.continual_aspect == 'single'
+                )
+                
+                if self.continual_aspect != 'retrained':
+                    ratings = ratings[ratings.timestamp >= self.start]
+
                 ratings = ratings[ratings.timestamp < self.stop]
 
                 self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
 
-                if len(ratings) == 0:
+                if len(ratings) == 0 or (self.continual_aspect == 'pretrained' and self.run > 0):
                     self.skip_timeframe = True
                 else:
                     self.skip_timeframe = False
