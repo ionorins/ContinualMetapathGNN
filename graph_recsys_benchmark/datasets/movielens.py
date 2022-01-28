@@ -941,11 +941,11 @@ class MovieLens(Dataset):
 
 
         if diff is not None and self.continual_aspect == 'continual':
-            hs = {e : h(e) for e in pos_edge_index_trans_np}
+            hs = {e.to_bytes() : h(e) for e in pos_edge_index_trans_np}
             print(hs)
             pos_edge_index_trans_np = np.array(sorted(
                 pos_edge_index_trans_np, 
-                key= lambda e: hs[e],
+                key= lambda e: hs[ee.to_bytes()],
                 reverse=True,
             ))
 
