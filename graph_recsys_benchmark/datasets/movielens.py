@@ -940,7 +940,7 @@ class MovieLens(Dataset):
             return torch.norm(h0 + h1)
 
 
-        if diff is not None:
+        if diff is not None and self.continual_aspect == 'continual':
             pos_edge_index_trans_np = np.array(sorted(
                 pos_edge_index_trans_np, 
                 key=h,
