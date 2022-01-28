@@ -883,7 +883,7 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(
-                    movies, ratings, tagging, self.start, self.stop, self.continual_aspect == 'online'
+                    movies, ratings, tagging, self.start, self.stop, self.continual_aspect in ['online', 'single']
                 )
                 
                 if self.continual_aspect != 'retrained':

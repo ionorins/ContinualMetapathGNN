@@ -164,7 +164,7 @@ class BaseSolver(object):
                             self.model_args['num_users'] = dataset.num_uids
                             self.model_args['num_items'] = dataset.num_iids
 
-                        if i == 0:
+                        if i == 0 or dataset.continual_aspect == 'single':
                             model = self.model_class(**self.model_args)
                             diff = None
                         else:
