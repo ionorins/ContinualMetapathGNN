@@ -894,7 +894,8 @@ class MovieLens(Dataset):
                 self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
 
-                if len(ratings) == 0 or (self.continual_aspect == 'pretrained' and self.run > 0):
+                if len(ratings) == 0 or 
+                    (self.continual_aspect == 'pretrained' and self.timeframe > 0):
                     self.skip_timeframe = True
                 else:
                     self.skip_timeframe = False
