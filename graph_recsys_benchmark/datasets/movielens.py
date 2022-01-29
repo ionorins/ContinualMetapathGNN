@@ -308,8 +308,12 @@ def generate_mlsmall_hete_graph(
 
         unid = e2nid_dict['uid'][uid]
 
-        train_pos_uid_iids = list(uid_iids[:-1])  # Use leave one out setup
-        train_pos_uid_ratings = uid_ratings[:-1]
+        train_pos_uid_iids = list(uid_iids)
+        train_pos_uid_ratings = uid_ratings
+
+        if not future_testing:
+            train_pos_uid_iids = train_pos_uid_iids[:-1]  # Use leave one out setup
+            train_pos_uid_ratings = train_pos_uid_ratings[:-1]            
 
         train_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in train_pos_uid_iids]
         test_pos_uid_iids = list(uid_iids[-1:])

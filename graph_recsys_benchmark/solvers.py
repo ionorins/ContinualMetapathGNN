@@ -214,13 +214,13 @@ class BaseSolver(object):
                                 )
                             )
 
-                            if dataset.skip_timeframe:
+                            if dataset.skip_timeframe and not dataset.future_testing:
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
                                 break
 
-                            if dataset.future_testing:
+                            if dataset.future_testing and i > 0:
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
@@ -521,6 +521,7 @@ class BaseSolver(object):
                 )
                 instantwrite(logger_file)
 
-                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
-                f.write(f'{i},{str(HRs_per_run_np[-1][5])}\n')
-                f.close()
+                if not dataset.future_testing:
+                    f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
+                    f.write(f'{i},{str(HRs_per_run_np[-1][5])}\n')
+                    f.close()
