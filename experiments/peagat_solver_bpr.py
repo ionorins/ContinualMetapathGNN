@@ -85,6 +85,7 @@ dataset_args = {
     'equal_timespan_timeframes': args.equal_timespan_timeframes.lower() == 'true', 'num_timeframes': args.num_timeframes, 
     'end_timeframe': args.end_timeframe, 'start_timeframe': args.start_timeframe,
     'continual_aspect': args.continual_aspect,
+    'future_testing': args.future_testing.lower() == 'true',
 }
 model_args = {
     'model_type': MODEL_TYPE,
@@ -96,7 +97,6 @@ model_args = {
     'entity_aware': args.entity_aware.lower() == 'true',
     'entity_aware_coff': args.entity_aware_coff,
     'ewc_type': args.ewc_type, 'ewc_lambda': args.ewc_lambda,
-    'future_testing': args.future_testing.lower() == 'true',
 }
 path_args = model_args.copy()
 path_args['meta_path_steps'] = len(path_args['meta_path_steps'])
