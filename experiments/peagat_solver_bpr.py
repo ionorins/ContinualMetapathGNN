@@ -95,7 +95,8 @@ model_args = {
     'channel_aggr': args.channel_aggr,
     'entity_aware': args.entity_aware.lower() == 'true',
     'entity_aware_coff': args.entity_aware_coff,
-    'ewc_type': args.ewc_type, 'ewc_lambda': args.ewc_lambda
+    'ewc_type': args.ewc_type, 'ewc_lambda': args.ewc_lambda,
+    'future_testing': args.future_testing.lower() == 'true',
 }
 path_args = model_args.copy()
 path_args['meta_path_steps'] = len(path_args['meta_path_steps'])
@@ -114,7 +115,6 @@ train_args = {
     'save_epochs': [int(i) for i in args.save_epochs.split(',')], 'save_every_epoch': args.save_every_epoch,
     'metapath_test': args.metapath_test.lower() == 'true',
     'theta': args.theta,
-    'future_testing': args.future_testing.lower() == 'true',
 }
 
 print('dataset params: {}'.format(dataset_args))
