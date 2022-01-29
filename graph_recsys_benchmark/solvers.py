@@ -489,39 +489,40 @@ class BaseSolver(object):
                 if dataset.skip_timeframe:
                     continue
 
-                print(
-                    'Overall HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
-                    'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, train loss: {:.4f}, eval loss: {:.4f}\n'.format(
-                        HRs_per_run_np.mean(axis=0)[0], HRs_per_run_np.mean(
-                            axis=0)[5], HRs_per_run_np.mean(axis=0)[10],
-                        HRs_per_run_np.mean(
-                            axis=0)[15], NDCGs_per_run_np.mean(axis=0)[0],
-                        NDCGs_per_run_np.mean(
-                            axis=0)[5], NDCGs_per_run_np.mean(axis=0)[10],
-                        NDCGs_per_run_np.mean(
-                            axis=0)[15], AUC_per_run_np.mean(axis=0)[0],
-                        train_loss_per_run_np.mean(
-                            axis=0)[0], eval_loss_per_run_np.mean(axis=0)[0]
-                    )
-                )
-                logger_file.write(
-                    'Overall HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
-                    'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, train loss: {:.4f}, eval loss: {:.4f}\n'.format(
-                        HRs_per_run_np.mean(axis=0)[0], HRs_per_run_np.mean(
-                            axis=0)[5], HRs_per_run_np.mean(axis=0)[10],
-                        HRs_per_run_np.mean(
-                            axis=0)[15], NDCGs_per_run_np.mean(axis=0)[0],
-                        NDCGs_per_run_np.mean(
-                            axis=0)[5], NDCGs_per_run_np.mean(axis=0)[10],
-                        NDCGs_per_run_np.mean(
-                            axis=0)[15], AUC_per_run_np.mean(axis=0)[0],
-                        train_loss_per_run_np.mean(
-                            axis=0)[0], eval_loss_per_run_np.mean(axis=0)[0]
-                    )
-                )
-                instantwrite(logger_file)
-
                 if not dataset.future_testing:
+                    print(
+                        'Overall HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
+                        'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, train loss: {:.4f}, eval loss: {:.4f}\n'.format(
+                            HRs_per_run_np.mean(axis=0)[0], HRs_per_run_np.mean(
+                                axis=0)[5], HRs_per_run_np.mean(axis=0)[10],
+                            HRs_per_run_np.mean(
+                                axis=0)[15], NDCGs_per_run_np.mean(axis=0)[0],
+                            NDCGs_per_run_np.mean(
+                                axis=0)[5], NDCGs_per_run_np.mean(axis=0)[10],
+                            NDCGs_per_run_np.mean(
+                                axis=0)[15], AUC_per_run_np.mean(axis=0)[0],
+                            train_loss_per_run_np.mean(
+                                axis=0)[0], eval_loss_per_run_np.mean(axis=0)[0]
+                        )
+                    )
+                    logger_file.write(
+                        'Overall HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
+                        'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, train loss: {:.4f}, eval loss: {:.4f}\n'.format(
+                            HRs_per_run_np.mean(axis=0)[0], HRs_per_run_np.mean(
+                                axis=0)[5], HRs_per_run_np.mean(axis=0)[10],
+                            HRs_per_run_np.mean(
+                                axis=0)[15], NDCGs_per_run_np.mean(axis=0)[0],
+                            NDCGs_per_run_np.mean(
+                                axis=0)[5], NDCGs_per_run_np.mean(axis=0)[10],
+                            NDCGs_per_run_np.mean(
+                                axis=0)[15], AUC_per_run_np.mean(axis=0)[0],
+                            train_loss_per_run_np.mean(
+                                axis=0)[0], eval_loss_per_run_np.mean(axis=0)[0]
+                        )
+                    )
+                    instantwrite(logger_file)
+
+
                     f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                     f.write(f'{i},{str(HRs_per_run_np[-1][5])}\n')
                     f.close()
