@@ -937,7 +937,7 @@ class MovieLens(Dataset):
         def h(e):
             h0 = diff[int(e[0].item())]
             h1 = diff[int(e[1].item())]
-            return torch.norm(h0 + h1, p=1)
+            return torch.norm(h0 + h1)
 
 
         if diff is not None and self.continual_aspect == 'continual':
