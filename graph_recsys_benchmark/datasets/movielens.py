@@ -123,7 +123,7 @@ def drop_infrequent_concept_from_str(df, concept_name, num_occs):
 
 
 def generate_mlsmall_hete_graph(
-        movies, ratings, tagging, start, stop, single
+        movies, ratings, tagging, start, stop, single, future_testing
 ):
     def get_concept_num_from_str(df, concept_name):
         concept_strs = [concept_str.split(',') for concept_str in df[concept_name]]
@@ -307,8 +307,10 @@ def generate_mlsmall_hete_graph(
         uid_ratings = uid_ratings.rating.to_numpy()
 
         unid = e2nid_dict['uid'][uid]
+
         train_pos_uid_iids = list(uid_iids[:-1])  # Use leave one out setup
         train_pos_uid_ratings = uid_ratings[:-1]
+
         train_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in train_pos_uid_iids]
         test_pos_uid_iids = list(uid_iids[-1:])
         test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
@@ -619,6 +621,7 @@ class MovieLens(Dataset):
         self.equal_timespan_timeframes = kwargs['equal_timespan_timeframes']
 
         self.continual_aspect = kwargs['continual_aspect']
+        self.future_testing = kwargs['future_testing']
 
         super(MovieLens, self).__init__(root, transform, pre_transform, pre_filter)
 
@@ -883,7 +886,8 @@ class MovieLens(Dataset):
             # Generate and save graph
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(
-                    movies, ratings, tagging, self.start, self.stop, self.continual_aspect in ['online', 'single']
+                    movies, ratings, tagging, self.start, self.stop, 
+                    self.continual_aspect in ['online', 'single'], self.future_testing
                 )
                 
                 if self.continual_aspect != 'retrained':

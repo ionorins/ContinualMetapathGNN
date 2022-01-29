@@ -220,6 +220,12 @@ class BaseSolver(object):
                                 f.close()
                                 break
 
+                            if dataset.future_testing:
+                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
+                                f.write(f'{i},{str(HRs_before_np[5])}\n')
+                                f.close()
+                                break
+
                             logger_file.write(
                                 'Initial performance HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
                                 'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, '
