@@ -218,7 +218,6 @@ class BaseSolver(object):
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
-                                torch.save(model, 'model.pth')
                                 break
 
                             if dataset.future_testing and i > 0:
