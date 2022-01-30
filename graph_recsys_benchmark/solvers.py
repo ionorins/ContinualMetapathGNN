@@ -200,10 +200,18 @@ class BaseSolver(object):
 
                         start_epoch = last_epoch + 1
                         if start_epoch == 1 and self.train_args['init_eval']:
+                            new_model = None
+                            if dataset.continual_aspect == 'single':
+                                new_model = model
+                                model = torch.load('model.pth')
                             model.eval()
                             with torch.no_grad():
                                 HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
                                     self.metrics(run, 0, model, dataset)
+
+                            if dataset.continual_aspect == 'single':
+                                model = new_model
+
                             print(
                                 'Initial performance HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
                                 'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, '
