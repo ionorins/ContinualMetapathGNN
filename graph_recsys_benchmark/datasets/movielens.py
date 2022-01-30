@@ -295,6 +295,8 @@ def generate_mlsmall_hete_graph(
     rating_np = np.zeros((0,))
     user2item_edge_index_np = np.zeros((2, 0))
 
+    unfiltered_sorted_ratings = ratings.sort_values('uid')
+
     if single:
         ratings = ratings[ratings.timestamp >= start]
 
@@ -306,6 +308,8 @@ def generate_mlsmall_hete_graph(
         uid_iids = uid_ratings.iid.to_numpy()
         uid_ratings = uid_ratings.rating.to_numpy()
 
+        unfiltered_uid_iids = uid_ratings.iid.to_numpy()
+
         unid = e2nid_dict['uid'][uid]
 
         train_pos_uid_iids = list(uid_iids)
@@ -316,9 +320,9 @@ def generate_mlsmall_hete_graph(
             train_pos_uid_ratings = train_pos_uid_ratings[:-1]            
 
         train_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in train_pos_uid_iids]
-        test_pos_uid_iids = list(uid_iids[-1:])
+        test_pos_uid_iids = list(unfiltered_uid_iids[-1:])
         test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
-        neg_uid_iids = list(set(unique_iids) - set(uid_iids))
+        neg_uid_iids = list(set(unique_iids) - set(unfiltered_uid_iids))
         neg_uid_inids = [e2nid_dict['iid'][iid] for iid in neg_uid_iids]
 
         test_pos_unid_inid_map[unid] = test_pos_uid_inids
