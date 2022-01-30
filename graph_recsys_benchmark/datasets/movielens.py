@@ -308,7 +308,7 @@ def generate_mlsmall_hete_graph(
         uid_iids = uid_ratings.iid.to_numpy()
         uid_ratings = uid_ratings.rating.to_numpy()
 
-        unfiltered_uid_ratings = unfiltered_sorted_ratings[sorted_ratings.uid == uid].sort_values('timestamp')
+        unfiltered_uid_ratings = unfiltered_sorted_ratings[unfiltered_sorted_ratings.uid == uid].sort_values('timestamp')
         unfiltered_uid_iids = unfiltered_uid_ratings.iid.to_numpy()
         unfiltered_uid_ratings = unfiltered_uid_ratings.rating.to_numpy()
 
