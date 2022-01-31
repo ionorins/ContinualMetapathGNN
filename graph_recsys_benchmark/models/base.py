@@ -115,7 +115,7 @@ class GraphRecsysModel(torch.nn.Module):
         log_likelihood = self.real_loss(pos_neg_pair_t)
         grad_log_liklihood = autograd.grad(
             log_likelihood, 
-            [param for param in self.parameters() if param.require_grad], 
+            [param for param in self.parameters() if param.requires_grad], 
             allow_unused=True
         )
         _buff_param_names = [param[0].replace(
