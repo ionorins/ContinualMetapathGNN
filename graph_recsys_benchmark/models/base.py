@@ -113,11 +113,7 @@ class GraphRecsysModel(torch.nn.Module):
 
     def _update_fisher_params(self, pos_neg_pair_t):
         log_likelihood = self.real_loss(pos_neg_pair_t)
-        grad_log_liklihood = autograd.grad(
-            log_likelihood, 
-            [param for param in self.parameters() if param.requires_grad], 
-            allow_unused=True
-        )
+        grad_log_liklihood = autograd.grad(log_likelihood, self.parameters(), allow_unused=True)
         _buff_param_names = [param[0].replace(
             '.', '__') for param in self.named_parameters()]
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
@@ -236,8 +232,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
         # Create node embedding
         if not self.if_use_features:
-            self.x = Parameter(torch.eye(kwargs['dataset']['num_nodes']))
-            self.x.requires_grad = False
+            self.x = Parameter(torch.Tensor(
+                kwargs['dataset']['num_nodes'], kwargs['emb_dim']))
             kwargs['emb_dim'] = kwargs['dataset']['num_nodes']
         else:
             raise NotImplementedError('Feature not implemented!')
