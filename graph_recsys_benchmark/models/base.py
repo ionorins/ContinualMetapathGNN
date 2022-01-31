@@ -113,7 +113,8 @@ class GraphRecsysModel(torch.nn.Module):
 
     def _update_fisher_params(self, pos_neg_pair_t):
         log_likelihood = self.real_loss(pos_neg_pair_t)
-        grad_log_liklihood = autograd.grad(log_likelihood, self.parameters(), allow_unused=True)
+        grad_log_liklihood = autograd.grad(log_likelihood, self.parameters(), 
+            allow_unused=True, require_grad=False)
         _buff_param_names = [param[0].replace(
             '.', '__') for param in self.named_parameters()]
         for _buff_param_name, param in zip(_buff_param_names, grad_log_liklihood):
