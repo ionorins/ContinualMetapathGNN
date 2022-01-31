@@ -233,7 +233,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
         # Create node embedding
         if not self.if_use_features:
             self.x = Parameter(torch.eye(kwargs['dataset']['num_nodes']))
-            self.x.requires_grad = False
+            # self.x.requires_grad = False
             kwargs['emb_dim'] = kwargs['dataset']['num_nodes']
         else:
             raise NotImplementedError('Feature not implemented!')
