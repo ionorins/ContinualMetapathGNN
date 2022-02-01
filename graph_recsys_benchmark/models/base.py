@@ -234,7 +234,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
         if not self.if_use_features:
             self.x = Parameter(torch.Tensor(
                 kwargs['dataset']['num_nodes'], kwargs['emb_dim']))
-            kwargs['emb_dim'] = kwargs['dataset']['num_nodes']
+
         else:
             raise NotImplementedError('Feature not implemented!')
 
