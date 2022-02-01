@@ -868,8 +868,7 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
 
-                print(len(ratings))
-                exit()
+                ratings = ratings[37095:42524]
 
                 if self.timeframe >= 0:
                     if self.equal_timespan_timeframes:
