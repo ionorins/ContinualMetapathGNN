@@ -308,9 +308,10 @@ def update_pea_graph_input(dataset_args, train_args, dataset):
             meta_path_edge_indicis_8 = [tag2item_edge_index, torch.flip(user2item_edge_index, dims=[0])]
             meta_path_edge_indicis_9 = [tag2user_edge_index, user2item_edge_index]
             meta_path_edge_index_list = [
-                meta_path_edge_indicis_1, meta_path_edge_indicis_2, meta_path_edge_indicis_3,
-                meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
-                meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9
+                meta_path_edge_indicis_1, meta_path_edge_indicis_2, 
+                # meta_path_edge_indicis_3,
+                # meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
+                # meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9
             ]
 
         if dataset_args['name'] == "25m":
