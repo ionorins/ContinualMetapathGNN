@@ -312,6 +312,7 @@ def update_pea_graph_input(dataset_args, train_args, dataset):
                 meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
                 meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9
             ]
+            meta_path_edge_index_list = 9 * [[]]
 
         if dataset_args['name'] == "25m":
             user2item_edge_index = torch.from_numpy(dataset.edge_index_nps['user2item']).long().to(
