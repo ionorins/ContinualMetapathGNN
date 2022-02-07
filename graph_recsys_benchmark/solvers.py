@@ -168,7 +168,7 @@ class BaseSolver(object):
                             self.model_args['num_items'] = dataset.num_iids
 
                         if i == 0 or dataset.continual_aspect == 'single':
-                            model = self.model_class(**self.model_args)
+                            model = torch.load('0f3413982b923fdd9baead68ca385b3a.pth')#self.model_class(**self.model_args)
                             diff = None
                         else:
                             model = torch.load(model_filename + '.pth')
