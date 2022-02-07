@@ -176,7 +176,8 @@ class BaseSolver(object):
                             model.update_graph_input(dataset)
 
                             _, ind = torch.sort(torch.norm(last_embeddings), descending=True)
-                            print(f'top 5 emb: {last_embeddings[ind[:5]]}')
+                            top5 = ind[:5]
+                            print(f'top 5 emb: {last_embeddings[top5]}')
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff)
