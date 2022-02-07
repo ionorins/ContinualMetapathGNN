@@ -206,13 +206,14 @@ class BaseSolver(object):
                             new_model = None
                             if dataset.continual_aspect == 'single':
                                 new_model = model
-                                model = torch.load(model_filename + '.pth')
+                                if i > 0:
+                                    model = torch.load(model_filename + '.pth')
                             model.eval()
                             with torch.no_grad():
                                 HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
                                     self.metrics(run, 0, model, dataset)
 
-                            if dataset.continual_aspect == 'single' and i > 0:
+                            if dataset.continual_aspect == 'single':
                                 model = new_model
 
                             print(
