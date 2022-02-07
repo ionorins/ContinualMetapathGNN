@@ -168,15 +168,18 @@ class BaseSolver(object):
                             self.model_args['num_items'] = dataset.num_iids
 
                         if i == 0 or dataset.continual_aspect == 'single':
-                            model = torch.load('0f3413982b923fdd9baead68ca385b3a.pth')#self.model_class(**self.model_args)
+                            model = self.model_class(**self.model_args)
                             diff = None
                         else:
                             model = torch.load(model_filename + '.pth')
                             last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
+                            sort, _ = torch.sort(torch.norm(last_embeddings))
+                            print(f'top 5 emb: {last_embeddings[sort[:5]]}')
+
                             diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff, dim=1)
+                            diff = torch.norm(diff)
 
                         model = model.to(self.train_args['device'])
 
