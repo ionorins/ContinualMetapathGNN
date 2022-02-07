@@ -175,10 +175,6 @@ class BaseSolver(object):
                             last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
-                            _, ind = torch.sort(torch.norm(last_embeddings, dim=1), descending=True)
-                            top5 = ind[:5]
-                            print(f'top 5 emb: {last_embeddings[top5]}')
-
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
 
@@ -237,9 +233,9 @@ class BaseSolver(object):
                                 break
 
                             if dataset.future_testing and i > 0:
-                                # f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
-                                # f.write(f'{i},{str(HRs_before_np[5])}\n')
-                                # f.close()
+                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
+                                f.write(f'{i},{str(HRs_before_np[5])}\n')
+                                f.close()
 
                                 if dataset.continual_aspect == 'pretrained':
                                     break
