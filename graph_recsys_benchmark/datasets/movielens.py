@@ -912,6 +912,7 @@ class MovieLens(Dataset):
 
                 if len(ratings) == 0 or \
                     (self.continual_aspect == 'pretrained' and self.timeframe > 0):
+                    print('SKIPPED TIMEFRAME')
                     self.skip_timeframe = True
                 else:
                     self.skip_timeframe = False
