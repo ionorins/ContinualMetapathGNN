@@ -1,6 +1,7 @@
 import os
 import random as rd
 from secrets import token_hex
+from xml.etree.ElementTree import indent
 import numpy as np
 import torch
 import time
@@ -176,6 +177,7 @@ class BaseSolver(object):
                             model.update_graph_input(dataset)
 
                             _, ind = torch.sort(torch.norm(last_embeddings), descending=True)
+                            print(ind)
                             top5 = ind[:5]
                             print(f'top 5 emb: {last_embeddings[top5]}')
 
