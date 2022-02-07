@@ -47,10 +47,13 @@ def save_model(file_path, model, optim, epoch, rec_metrics, silent=False):
         'rec_metrics': rec_metrics
     }
 
-    with open(file_path, mode='wb+') as f:
-        torch.save(states, f)
-    if not silent:
-        print("Saved checkpoint_backup '{}'".format(file_path))
+    try:
+        with open(file_path, mode='wb+') as f:
+            torch.save(states, f)
+        if not silent:
+            print("Saved checkpoint_backup '{}'".format(file_path))
+    except:
+        pass
 
 
 def save_kgat_model(file_path, model, optim, epoch, rec_metrics, silent=False):
