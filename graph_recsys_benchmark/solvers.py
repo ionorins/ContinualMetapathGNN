@@ -1,5 +1,6 @@
 import os
 import random as rd
+from secrets import token_hex
 import numpy as np
 import torch
 import time
@@ -115,6 +116,8 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
+        model_filename = token_hex(16)
+
         if self.dataset_args['end_timeframe'] is None:
             self.dataset_args['end_timeframe'] = self.dataset_args['num_timeframes']
 
@@ -168,7 +171,7 @@ class BaseSolver(object):
                             model = self.model_class(**self.model_args)
                             diff = None
                         else:
-                            model = torch.load('model.pth')
+                            model = torch.load(model_filename + '.pth')
                             last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
@@ -203,7 +206,7 @@ class BaseSolver(object):
                             new_model = None
                             if dataset.continual_aspect == 'single':
                                 new_model = model
-                                model = torch.load('model.pth')
+                                model = torch.load(model_filename + '.pth')
                             model.eval()
                             with torch.no_grad():
                                 HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
@@ -374,7 +377,7 @@ class BaseSolver(object):
 
                         model.register_ewc_params(dataset.train_data)
                         print('REGISTERED EWC PARAMS')
-                        torch.save(model, 'model.pth')
+                        torch.save(model, model_filename + '.pth')
 
                         HRs_per_run_np = np.vstack(
                             [HRs_per_run_np, np.max(HRs_per_epoch_np, axis=0)])
