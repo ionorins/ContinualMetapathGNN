@@ -212,7 +212,7 @@ class BaseSolver(object):
                                 HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
                                     self.metrics(run, 0, model, dataset)
 
-                            if dataset.continual_aspect == 'single':
+                            if dataset.continual_aspect == 'single' and i > 0:
                                 model = new_model
 
                             print(
