@@ -175,13 +175,12 @@ class BaseSolver(object):
                             last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
-                            _, ind = torch.sort(torch.norm(last_embeddings), descending=True)
-                            print(ind)
+                            _, ind = torch.sort(torch.norm(last_embeddings, dim=1), descending=True)
                             top5 = ind[:5]
                             print(f'top 5 emb: {last_embeddings[top5]}')
 
                             diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff)
+                            diff = torch.norm(diff, dim=1)
 
                         model = model.to(self.train_args['device'])
 
