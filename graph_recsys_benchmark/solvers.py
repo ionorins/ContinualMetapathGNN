@@ -226,8 +226,7 @@ class BaseSolver(object):
                                 )
                             )
 
-                            if dataset.skip_timeframe and \
-                                (not dataset.future_testing or dataset.continual_aspect == 'pretrained'):
+                            if dataset.skip_timeframe and not dataset.future_testing:
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
@@ -237,6 +236,9 @@ class BaseSolver(object):
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
+
+                                if dataset.continual_aspect == 'pretrained':
+                                    break
 
                             logger_file.write(
                                 'Initial performance HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
