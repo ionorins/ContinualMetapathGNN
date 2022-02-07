@@ -295,7 +295,8 @@ def generate_mlsmall_hete_graph(
     rating_np = np.zeros((0,))
     user2item_edge_index_np = np.zeros((2, 0))
 
-    test_sorted_ratings = ratings[ratings.timestamp >= start]
+    if future_testing:
+        test_sorted_ratings = ratings[ratings.timestamp >= start]
     test_sorted_ratings = ratings.sort_values('uid')
 
     if single:
