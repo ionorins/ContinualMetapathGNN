@@ -169,13 +169,15 @@ class BaseSolver(object):
 
                         if i == 0 or dataset.continual_aspect == 'single':
                             model = self.model_class(**self.model_args)
+                            last_embeddings = model.forward()
                             diff = None
                         else:
                             model = torch.load(model_filename + '.pth')
                             # last_embeddings = model.forward()
                             model.update_graph_input(dataset)
-
-                            diff = last_embeddings - model.forward()
+                            last_last_embeddings = last_embeddings
+                            last_embeddings = model.forward()
+                            diff = last_last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
 
                         model = model.to(self.train_args['device'])
@@ -322,7 +324,7 @@ class BaseSolver(object):
                                             )
 
                                 model.eval()
-                                last_embeddings = model.forward()
+                                
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(
                                         run, epoch, model, dataset)
