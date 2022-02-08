@@ -907,6 +907,9 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp < self.stop]
 
+                print(ratings)
+                exit()
+
                 self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
 
