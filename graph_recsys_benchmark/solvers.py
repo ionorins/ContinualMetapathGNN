@@ -178,8 +178,6 @@ class BaseSolver(object):
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
 
-                        last_embeddings = model.forward()
-
                         model = model.to(self.train_args['device'])
 
                         opt_class = get_opt_class(self.train_args['opt'])
@@ -324,6 +322,7 @@ class BaseSolver(object):
                                             )
 
                                 model.eval()
+                                last_embeddings = model.forward()
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(
                                         run, epoch, model, dataset)
