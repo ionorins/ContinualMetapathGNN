@@ -233,9 +233,9 @@ class BaseSolver(object):
                                 break
 
                             if dataset.future_testing and i > 0:
-                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}optfuture.csv', 'a')
-                                f.write(f'{i},{str(HRs_before_np[5])}\n')
-                                f.close()
+                                # f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}optfuture.csv', 'a')
+                                # f.write(f'{i},{str(HRs_before_np[5])}\n')
+                                # f.close()
 
                                 if dataset.continual_aspect == 'pretrained':
                                     break
