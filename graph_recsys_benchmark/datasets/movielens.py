@@ -910,9 +910,7 @@ class MovieLens(Dataset):
 
                 for rating in ratings.itertuples():
                     self.edge_hist[(rating.uid, rating.iid)] = self.timeframe
-                print(self.edge_hist)
-                exit()
-
+      
                 self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
 
@@ -976,6 +974,8 @@ class MovieLens(Dataset):
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
                 pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 self.pos_edge_index_trans_np = pos_edge_index_trans_np
+                print(pos_edge_index_trans_np)
+                exit()
             else:
                 pos_edge_index_trans_np = self.pos_edge_index_trans_np
 
