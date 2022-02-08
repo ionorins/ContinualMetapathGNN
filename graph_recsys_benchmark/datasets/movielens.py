@@ -956,10 +956,10 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
 
         def h(e):
-            e1= int(e[0].item())
-            e2 = int(e[0].item())
-            d = torch.norm(diff[e1]) + torch.norm(diff[e2])
-            is_crt = self.edge_hist[(e1, e2)] == self.timeframe
+            e0= int(e[0].item())
+            e1 = int(e[1].item())
+            d = torch.norm(diff[e0]) + torch.norm(diff[e1])
+            is_crt = self.edge_hist[(e0, e1)] == self.timeframe
             
             return (is_crt, d)
 
