@@ -908,7 +908,7 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp < self.stop]
 
-                for rating in ratings:
+                for rating in ratings.iteritems():
                     self.edge_hist[(rating.uid, rating.iid)] = self.num_timeframes
                 print(self.edge_hist)
                 exit()
