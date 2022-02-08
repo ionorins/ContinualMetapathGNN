@@ -959,17 +959,19 @@ class MovieLens(Dataset):
 
         if diff is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                print('recalc hs')
-                self.hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
+                hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
-            pos_edge_index_trans_np = np.array(sorted(
-                pos_edge_index_trans_np, 
-                key=lambda e: self.hs[e.tobytes()],
-                reverse=True,
-            ))
+                pos_edge_index_trans_np = np.array(sorted(
+                    pos_edge_index_trans_np, 
+                    key=lambda e: hs[e.tobytes()],
+                    reverse=True,
+                ))
 
-            no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
-            pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
+                pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                self.pos_edge_index_trans_np = pos_edge_index_trans_np
+            else:
+                pos_edge_index_trans_np = self.pos_edge_index_trans_np
 
         print('after:')
         print(len(pos_edge_index_trans_np))
