@@ -169,6 +169,7 @@ class BaseSolver(object):
 
                         if i == 0 or dataset.continual_aspect == 'single':
                             model = self.model_class(**self.model_args)
+                            model = model.to(self.train_args['device'])
                             last_embeddings = model.forward()
                             diff = None
                         else:
@@ -179,8 +180,6 @@ class BaseSolver(object):
                             last_embeddings = model.forward()
                             diff = last_last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
-
-                        model = model.to(self.train_args['device'])
 
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
