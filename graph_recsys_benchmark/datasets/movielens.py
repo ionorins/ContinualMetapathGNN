@@ -605,6 +605,7 @@ def generate_ml25m_hete_graph(
 
 
 class MovieLens(Dataset):
+    edge_hist = {}
     url = 'http://files.grouplens.org/datasets/movielens/'
 
     def __init__(self,
@@ -907,7 +908,9 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp < self.stop]
 
-                print((ratings.uid, ratings.iid))
+                for rating in ratings:
+                    self.edge_hist[(rating.uid, rating.iid)] = self.num_timeframes
+                print(self.edge_hist)
                 exit()
 
                 self.len_ratings = len(ratings)
