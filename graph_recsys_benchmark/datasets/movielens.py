@@ -13,6 +13,8 @@ from .dataset import Dataset
 from torch_geometric.data import download_url, extract_zip
 from ..parser import parse_ml25m, parse_mlsmall
 
+from random import random()
+
 
 def save_df(df, path):
     df.to_csv(path, sep=';', index=False)
@@ -956,9 +958,10 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
 
         def h(e):
-            e0= int(e[0].item())
+            e0 = int(e[0].item())
             e1 = int(e[1].item())
             d = torch.norm(diff[e0]) + torch.norm(diff[e1])
+            d = random()
             is_crt = self.edge_hist[(e0, e1)] == self.timeframe
             
             return (is_crt, d)
