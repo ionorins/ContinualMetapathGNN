@@ -981,8 +981,7 @@ class MovieLens(Dataset):
                     e1 = int(edge[1].item())
                     timeframe_no = self.edge_hist.get((e0, e1), 'future')
                     edge_dist[timeframe_no] = edge_dist.get(timeframe_no, 0) + 1
-                print(edge_dist)
-                exit()
+                print(f'edge dist {edge_dist}')
             else:
                 pos_edge_index_trans_np = self.pos_edge_index_trans_np
 
