@@ -958,8 +958,7 @@ class MovieLens(Dataset):
 
 
         if diff is not None and self.continual_aspect == 'continual':
-            print(epoch)
-            if epoch == 0:
+            if epoch == 1:
                 self.hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
             pos_edge_index_trans_np = np.array(sorted(
