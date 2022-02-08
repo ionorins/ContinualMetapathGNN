@@ -909,7 +909,7 @@ class MovieLens(Dataset):
                 ratings = ratings[ratings.timestamp < self.stop]
 
                 for rating in ratings.itertuples():
-                    self.edge_hist[(rating.uid, rating.iid + dataset_property_dict[num_uids])] = self.timeframe
+                    self.edge_hist[(rating.uid, rating.iid + dataset_property_dict['num_uids'])] = self.timeframe
       
                 self.len_ratings = len(ratings)
                 print(f'len(ratings): {len(ratings)}')
