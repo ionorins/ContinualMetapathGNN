@@ -964,11 +964,9 @@ class MovieLens(Dataset):
 
             pos_edge_index_trans_np = np.array(sorted(
                 pos_edge_index_trans_np, 
-                key= lambda e: self.hs[e.tobytes()],
+                key=lambda e: self.hs[e.tobytes()],
                 reverse=True,
             ))
-
-
 
             no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
             pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
