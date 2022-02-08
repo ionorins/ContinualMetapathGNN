@@ -172,11 +172,13 @@ class BaseSolver(object):
                             diff = None
                         else:
                             model = torch.load(model_filename + '.pth')
-                            last_embeddings = model.forward()
+                            # last_embeddings = model.forward()
                             model.update_graph_input(dataset)
 
                             diff = last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
+
+                        last_embeddings = model.forward()
 
                         model = model.to(self.train_args['device'])
 
