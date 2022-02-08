@@ -907,7 +907,7 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp < self.stop]
 
-                print(ratings)
+                print((ratings.uid, ratings.iid))
                 exit()
 
                 self.len_ratings = len(ratings)
