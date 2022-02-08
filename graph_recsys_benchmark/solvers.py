@@ -180,6 +180,7 @@ class BaseSolver(object):
                             last_embeddings = model.forward()
                             diff = last_last_embeddings - model.forward()
                             diff = torch.norm(diff, dim=1)
+                            print(f'max diff:{max(diff)}')
 
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
