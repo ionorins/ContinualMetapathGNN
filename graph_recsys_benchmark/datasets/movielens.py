@@ -956,10 +956,12 @@ class MovieLens(Dataset):
         print(len(pos_edge_index_trans_np))
 
         def h(e):
-            h0 = diff[int(e[0].item())]
-            h1 = diff[int(e[1].item())]
-            return torch.norm(h0) + torch.norm(h1)
-
+            e1= int(e[0].item())
+            e2 = int(e[0].item())
+            d = torch.norm(diff[e1]) + torch.norm(diff[e2])
+            is_crt = self.edge_hist[(e1, e2)] == self.timeframe
+            
+            return (is_crt, d)
 
         if diff is not None and self.continual_aspect == 'continual':
             if epoch == 1:
