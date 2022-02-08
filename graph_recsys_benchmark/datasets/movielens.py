@@ -942,7 +942,7 @@ class MovieLens(Dataset):
         self.train_data = train_data_t[shuffle_idx]
         self.train_data_length = train_data_t.shape[0]
 
-    def cf_negative_sampling(self, diff, theta):
+    def cf_negative_sampling(self, diff, theta, epoch):
         """
         Replace positive items with random/unseen items
         """
@@ -958,11 +958,12 @@ class MovieLens(Dataset):
 
 
         if diff is not None and self.continual_aspect == 'continual':
-            hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
+            if epoch == 0:
+                self.hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
             pos_edge_index_trans_np = np.array(sorted(
                 pos_edge_index_trans_np, 
-                key= lambda e: hs[e.tobytes()],
+                key= lambda e: self.hs[e.tobytes()],
                 reverse=True,
             ))
 
