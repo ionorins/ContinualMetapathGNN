@@ -170,20 +170,13 @@ class BaseSolver(object):
                         if i == 0 or dataset.continual_aspect == 'single':
                             model = self.model_class(**self.model_args)
                             model = model.to(self.train_args['device'])
-                            last_embeddings = model.forward()
-                            diff = None
+                            last_emb = None
+                            crt_emb = None
                         else:
                             model = torch.load(model_filename + '.pth')
-                            last_embeddings = model.forward()
-
-                            for node in 457, 272, 188, 154, 118, 1275, 2441, 1450, 749, 1219:
-                                print(f'emb of node {node}: {last_embeddings[node]}')
+                            last_emb = model.forward()
                             model.update_graph_input(dataset)
-                            # last_last_embeddings = last_embeddings
-                            # last_embeddings = model.forward()
-                            diff = last_embeddings - model.forward()
-                            diff = torch.norm(diff, dim=1)
-                            print(f'max diff:{max(diff)}')
+                            crt_emb = model.forward()
 
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
@@ -264,7 +257,12 @@ class BaseSolver(object):
                             for epoch in range(start_epoch, self.train_args['epochs'] + 1):
                                 loss_per_batch = []
                                 model.train()
-                                dataset.cf_negative_sampling(diff, self.train_args['theta'], epoch)
+                                dataset.cf_negative_sampling(
+                                    last_emb, 
+                                    crt_emb, 
+                                    self.train_args['theta'], 
+                                    epoch
+                                )
 
                                 print(
                                     f'len(dataset.train_data)={len(dataset.train_data)}')
