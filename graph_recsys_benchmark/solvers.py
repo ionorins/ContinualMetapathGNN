@@ -202,7 +202,7 @@ class BaseSolver(object):
                         start_epoch = last_epoch + 1
                         if start_epoch == 1 and self.train_args['init_eval']:
                             new_model = None
-                            if dataset.continual_aspect == 'single':
+                            if dataset.continual_aspect in ['single', 'retrained']:
                                 new_model = model
                                 if i > 0:
                                     model = torch.load(model_filename + '.pth')
@@ -211,7 +211,7 @@ class BaseSolver(object):
                                 HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
                                     self.metrics(run, 0, model, dataset)
 
-                            if dataset.continual_aspect == 'single':
+                            if dataset.continual_aspect in ['single', 'retrained']:
                                 model = new_model
 
                             print(
