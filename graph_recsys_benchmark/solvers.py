@@ -175,6 +175,9 @@ class BaseSolver(object):
                         else:
                             model = torch.load(model_filename + '.pth')
                             last_embeddings = model.forward()
+
+                            for node in 457, 272, 188, 154, 118, 1275, 2441, 1450, 749, 1219:
+                                print(f'emb of node {node}: {last_embeddings[node]}')
                             model.update_graph_input(dataset)
                             # last_last_embeddings = last_embeddings
                             # last_embeddings = model.forward()
