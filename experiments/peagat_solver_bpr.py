@@ -61,6 +61,7 @@ parser.add_argument('--ewc_type', type=str, default='ewc', help='')
 parser.add_argument('--ewc_lambda', type=float, default=80, help='')
 parser.add_argument('--theta', type=float, default=1, help='')
 parser.add_argument('--future_testing', type=str, default='false', help='')
+parser.add_argument('--train_between_emb_diff', type=str, default='true', help='')
 
 args = parser.parse_args()
 
@@ -115,6 +116,7 @@ train_args = {
     'save_epochs': [int(i) for i in args.save_epochs.split(',')], 'save_every_epoch': args.save_every_epoch,
     'metapath_test': args.metapath_test.lower() == 'true',
     'theta': args.theta,
+    'train_between_emb_diff': args.train_between_emb_diff.lower() == 'true',
 }
 
 print('dataset params: {}'.format(dataset_args))

@@ -172,13 +172,21 @@ class BaseSolver(object):
                             model = model.to(self.train_args['device'])
                             last_emb = None
                             crt_emb = None
-                            crt_emb = model.forward()
+                            if self.train_args['train_between_emb_diff']:
+                                crt_emb = model.forward()
                         else:
                             model = torch.load(model_filename + '.pth')
-                            # last_emb = model.forward()
-                            last_emb = crt_emb
+
+                            if self.train_args['train_between_emb_diff']:
+                                last_emb = crt_emb
+                            else:
+                                last_emb = model.forward()
+
                             model.update_graph_input(dataset)
                             crt_emb = model.forward()
+
+                        # df = pd.DataFrame(crt_emb.numpy())
+                        # df.to_csv(f'timeframe{i}.csv')
 
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
