@@ -172,9 +172,11 @@ class BaseSolver(object):
                             model = model.to(self.train_args['device'])
                             last_emb = None
                             crt_emb = None
+                            crt_emb = model.forward
                         else:
                             model = torch.load(model_filename + '.pth')
-                            last_emb = model.forward()
+                            # last_emb = model.forward()
+                            last_emb = crt_emb
                             model.update_graph_input(dataset)
                             crt_emb = model.forward()
 
