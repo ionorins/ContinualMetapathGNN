@@ -167,7 +167,7 @@ class BaseSolver(object):
                             self.model_args['num_users'] = dataset.num_uids
                             self.model_args['num_items'] = dataset.num_iids
 
-                        if i == dataset.start_timeframe or dataset.continual_aspect in ['single', 'retrained']:
+                        if i == self.dataset_args['start_timeframe'] or dataset.continual_aspect in ['single', 'retrained']:
                             model = self.model_class(**self.model_args)
                             model = model.to(self.train_args['device'])
                             last_emb = None
