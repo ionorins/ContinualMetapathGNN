@@ -185,7 +185,7 @@ class BaseSolver(object):
                             model.update_graph_input(dataset)
                             crt_emb = model.forward()
 
-                        df = pd.DataFrame(crt_emb.numpy())
+                        df = pd.DataFrame(crt_emb.cpu().numpy())
                         df.to_csv(f'timeframe{i}emb.csv')
                         print(f'att: {model.att}')
 
