@@ -185,9 +185,9 @@ class BaseSolver(object):
                             model.update_graph_input(dataset)
                             crt_emb = model.forward()
 
-                        # df = pd.DataFrame(crt_emb.numpy())
-                        # df.to_csv(f'timeframe{i}emb.csv')
-                        # print(f'att: {model.att}')
+                        df = pd.DataFrame(crt_emb.numpy())
+                        df.to_csv(f'timeframe{i}emb.csv')
+                        print(f'att: {model.att}')
 
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
