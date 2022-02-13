@@ -654,7 +654,7 @@ class MovieLens(Dataset):
 
     @property
     def processed_file_names(self):
-        return ['ml_{}_{}.pkl'.format(self.name, self.build_suffix())]
+        return ['ml_{}_{}_{}.pkl'.format(self.name, self.build_suffix(), self.continual_aspect)]
 
     def download(self):
         path = download_url(self.url + self.raw_file_names, self.raw_dir)
