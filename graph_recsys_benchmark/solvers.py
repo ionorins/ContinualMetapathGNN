@@ -216,7 +216,7 @@ class BaseSolver(object):
                             new_model = None
                             if dataset.continual_aspect in ['single', 'retrained']:
                                 new_model = model
-                                if i > 0:
+                                if i > self.dataset_args['start_timeframe']:
                                     model = torch.load(model_filename + '.pth')
                             model.eval()
                             with torch.no_grad():
@@ -242,7 +242,7 @@ class BaseSolver(object):
                                 f.close()
                                 break
 
-                            if dataset.future_testing and i > 0:
+                            if dataset.future_testing and i > self.dataset_args['start_timeframe']:
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])}\n')
                                 f.close()
