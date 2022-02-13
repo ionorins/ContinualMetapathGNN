@@ -632,6 +632,7 @@ class MovieLens(Dataset):
         self.timeframe = kwargs['timeframe']
         self.num_timeframes = kwargs['num_timeframes']
         self.equal_timespan_timeframes = kwargs['equal_timespan_timeframes']
+        self.start_timeframe = kwargs['start_timeframe']
 
         self.continual_aspect = kwargs['continual_aspect']
         self.future_testing = kwargs['future_testing']
@@ -879,15 +880,18 @@ class MovieLens(Dataset):
                         diff = (max_timestamp - min_timestamp) / self.num_timeframes
                         self.start = min_timestamp + self.timeframe * diff
                         self.stop = self.start + diff
+                        self.init_time = min_timestamp + self.start_timeframe * diff
 
                     else:
                         ratings = ratings.sort_values('timestamp')
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
                         stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings)) - 1
+                        init_id = min((self.start_timeframe + 1) * timeframe_size, len(ratings)) - 1
                         print(f'selecting {start_id} - {stop_id}')
                         self.start = ratings.iloc[start_id]['timestamp']
                         self.stop = ratings.iloc[stop_id]['timestamp'] + 0.5
+                        self.init_time = ratings.iloc[init_id]['timestamp']
 
                 # save dfs
                 print('Saving processed csv...')
