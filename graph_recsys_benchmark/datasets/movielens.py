@@ -889,7 +889,7 @@ class MovieLens(Dataset):
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
                         stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings)) - 1
-                        init_id = min((self.start_timeframe + 1) * timeframe_size, len(ratings)) - 1
+                        init_id = self.start_timeframe * timeframe_size
                         print(f'selecting {start_id} - {stop_id}')
                         self.start = ratings.iloc[start_id]['timestamp']
                         self.stop = ratings.iloc[stop_id]['timestamp'] + 0.5
