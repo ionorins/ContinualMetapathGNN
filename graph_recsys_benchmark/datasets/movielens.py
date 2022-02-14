@@ -967,7 +967,7 @@ class MovieLens(Dataset):
             last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
             crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
             d = torch.norm(crt_e - last_e)
-            d = np.random.random()
+            # d = np.random.random()
             is_crt = self.edge_hist.get((n0, n1), -1) == self.timeframe
             
             return (is_crt, d)
