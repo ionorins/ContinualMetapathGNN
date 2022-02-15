@@ -185,11 +185,6 @@ class BaseSolver(object):
                             model.update_graph_input(dataset)
                             crt_emb = model.forward()
 
-                        df = pd.DataFrame(crt_emb.cpu().detach().numpy())
-                        df.to_csv(f'timeframe{i}emb.csv')
-                        df = pd.DataFrame(model.att[0].cpu().detach().numpy())
-                        df.to_csv(f'timeframe{i}att.csv')
-
                         opt_class = get_opt_class(self.train_args['opt'])
                         optimizer = opt_class(
                             params=model.parameters(),
@@ -337,6 +332,12 @@ class BaseSolver(object):
                                             )
 
                                 model.eval()
+
+
+                                df = pd.DataFrame(model.forward().cpu().detach().numpy())
+                                df.to_csv(f'timeframe{i}emb.csv')
+                                df = pd.DataFrame(model.att[0].cpu().detach().numpy())
+                                df.to_csv(f'timeframe{i}att.csv')
                                 
                                 with torch.no_grad():
                                     HRs, NDCGs, AUC, eval_loss = self.metrics(
