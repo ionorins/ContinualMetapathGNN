@@ -980,7 +980,7 @@ class MovieLens(Dataset):
         def age(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
-            return self.timeframe - self.edge_last_use.get((n0, n1), 0)
+            return self.timeframe - self.edge_last_use.get((n0, n1), 0) - 1
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
@@ -1004,12 +1004,12 @@ class MovieLens(Dataset):
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 eps = 2**(-8)
-                T = 2**20
+                T = 2**16
                 mult = 2
 
                 imps = torch.tensor([h(e) * (mult ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 imps =  imps* T + eps
-                print(imps)
+                print(f'probs: {imps}, min: {min(imps)}, max: {max(imps)}, mean: {np.mean(imps)}')
                 p = torch.softmax(imps, dim=0)
                 p /= sum(p)
                 print(f'probs: {p}, min: {min(p)}, max: {max(p)}')
