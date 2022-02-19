@@ -981,7 +981,7 @@ class MovieLens(Dataset):
         def age(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
-            return self.timeframe - self.edge_last_use.get((n0, n1), 0) - 1
+            return self.timeframe - self.edge_hist.get((n0, n1), 0) - 1
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
