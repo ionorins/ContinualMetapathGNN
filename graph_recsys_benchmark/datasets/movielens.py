@@ -1004,11 +1004,11 @@ class MovieLens(Dataset):
                 print(p)
 
                 inds = np.random.choice(
-                    len(pos_edge_index_trans_np_new), 
+                    len(pos_edge_index_trans_np_old), 
                     no_samples,
                     p = p
                 )
-                pos_edge_index_trans_np_new = pos_edge_index_trans_np_new[inds]
+                pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
                 pos_edge_index_trans_np = np.concatenate(
                     (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
