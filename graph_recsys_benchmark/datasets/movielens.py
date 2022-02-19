@@ -999,7 +999,8 @@ class MovieLens(Dataset):
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 eps = 0
                 T = 2**28
-                imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old]) * T + eps
+                imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                imps =  imps* T + eps
                 print(imps)
                 p = torch.softmax(imps, dim=0)
                 p /= sum(p)
