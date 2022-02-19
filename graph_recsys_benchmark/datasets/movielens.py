@@ -1002,6 +1002,7 @@ class MovieLens(Dataset):
                 imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old]) * T + eps
                 print(imps)
                 p = torch.softmax(imps, dim=0)
+                p /= sum(p)
                 print(p)
                 print(sum(p))
 
