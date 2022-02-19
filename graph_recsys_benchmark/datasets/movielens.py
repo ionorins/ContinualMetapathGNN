@@ -961,6 +961,11 @@ class MovieLens(Dataset):
         print('before:')
         print(len(pos_edge_index_trans_np))
 
+        def is_crt(e):
+            n0 = int(e[0].item())
+            n1 = int(e[1].item())
+            return self.edge_hist.get((n0, n1), -1) == self.timeframe
+
         def h(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
@@ -968,22 +973,40 @@ class MovieLens(Dataset):
             crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
             d = torch.norm(crt_e - last_e)
             # d = np.random.random()
-            is_crt = self.edge_hist.get((n0, n1), -1) == self.timeframe
             
-            return (is_crt, d)
+            return (is_crt(e), d)
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
+                # hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
-                pos_edge_index_trans_np = np.array(sorted(
-                    pos_edge_index_trans_np, 
-                    key=lambda e: hs[e.tobytes()],
-                    reverse=True,
-                ))
+                # pos_edge_index_trans_np = np.array(sorted(
+                #     pos_edge_index_trans_np, 
+                #     key=lambda e: hs[e.tobytes()],
+                #     reverse=True,
+                # ))
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
-                pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                no_samples -= self.len_ratings
+
+                pos_edge_index_trans_np_old = np.array([
+                    e for e in pos_edge_index_trans_np if not is_crt(e)
+                ])
+                pos_edge_index_trans_np_new = np.array([
+                    e for e in pos_edge_index_trans_np if is_crt(e)
+                ])
+
+                # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+
+                pos_edge_index_trans_np_new = np.random.choice(
+                    pos_edge_index_trans_np_new, 
+                    no_samples,
+                    p = [h(e) for e in pos_edge_index_trans_np]
+                )
+                pos_edge_index_trans_np = np.concatenate(
+                    (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
+                )
+
                 self.pos_edge_index_trans_np = pos_edge_index_trans_np
 
                 edge_dist = {}
