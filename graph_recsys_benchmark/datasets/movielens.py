@@ -1009,7 +1009,7 @@ class MovieLens(Dataset):
 
                 imps = torch.tensor([h(e) * (mult ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 imps =  imps* T + eps
-                print(f'probs: {imps}, min: {min(imps)}, max: {max(imps)}, mean: {np.mean(imps, dim=0)}')
+                print(f'probs: {imps}, min: {min(imps)}, max: {max(imps)}, mean: {torch.mean(imps)}')
                 p = torch.softmax(imps, dim=0)
                 p /= sum(p)
                 print(f'probs: {p}, min: {min(p)}, max: {max(p)}')
