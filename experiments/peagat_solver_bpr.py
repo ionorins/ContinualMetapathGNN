@@ -61,7 +61,7 @@ parser.add_argument('--ewc_type', type=str, default='ewc', help='')
 parser.add_argument('--ewc_lambda', type=float, default=80, help='')
 parser.add_argument('--theta', type=float, default=1, help='')
 parser.add_argument('--future_testing', type=str, default='false', help='')
-parser.add_argument('--train_between_emb_diff', type=str, default='true', help='')
+parser.add_argument('--train_between_emb_diff', type=str, default='false', help='')
 
 args = parser.parse_args()
 
