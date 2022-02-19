@@ -1033,7 +1033,7 @@ class MovieLens(Dataset):
                     e1 = int(edge[1].item())
                     timeframe_no = self.edge_hist.get((e0, e1), 'future')
                     edge_dist[timeframe_no] = edge_dist.get(timeframe_no, 0) + 1
-                    self.edge_last_used[(e0, e1)] = self.timeframe
+                    self.edge_last_use[(e0, e1)] = self.timeframe
                 
                 print('edge dist: ' + ''.join([f'{t}:{edge_dist.get(t, 0)} ' for t in range(self.num_timeframes)]))
             else:
