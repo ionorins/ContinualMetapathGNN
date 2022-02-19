@@ -1004,9 +1004,7 @@ class MovieLens(Dataset):
                 print(imps)
                 p = torch.softmax(imps, dim=0)
                 p /= sum(p)
-                print(p)
-                print(min(p))
-                print(max(p))
+                print(f'probs: {p}, min: {min(p)}, max: {max(p)}')
 
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
