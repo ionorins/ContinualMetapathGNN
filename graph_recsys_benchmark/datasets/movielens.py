@@ -1003,7 +1003,7 @@ class MovieLens(Dataset):
                 ])
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                eps = 2**(-4)
+                eps = 2**(-8)
                 T = 2**20
                 mult = 2
 
