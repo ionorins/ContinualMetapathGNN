@@ -1000,7 +1000,7 @@ class MovieLens(Dataset):
                 eps = 1e-30
                 T = torch.tensor([[h(e) for e in pos_edge_index_trans_np]]) + eps
                 print(T)
-                p = torch.softmax(T, dim=0)
+                p = torch.softmax(T, dim=0)[0]
                 print(p)
 
                 inds = np.random.choice(
