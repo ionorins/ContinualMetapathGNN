@@ -974,11 +974,11 @@ class MovieLens(Dataset):
             d = torch.norm(crt_e - last_e)
             # d = np.random.random()
             
-            return (is_crt(e), d)
+            return d
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                # hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
+                # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
 
                 # pos_edge_index_trans_np = np.array(sorted(
                 #     pos_edge_index_trans_np, 
@@ -997,8 +997,8 @@ class MovieLens(Dataset):
                 ])
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                T = torch.tensor([h(e) for e in pos_edge_index_trans_np]).T
-                p = torch.softmax(T).T
+                T = torch.tensor([h(e)[] for e in pos_edge_index_trans_np])
+                p = torch.softmax(T)
 
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_new), 
