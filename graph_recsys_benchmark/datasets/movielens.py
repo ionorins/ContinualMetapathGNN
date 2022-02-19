@@ -608,6 +608,7 @@ def generate_ml25m_hete_graph(
 
 class MovieLens(Dataset):
     edge_hist = {}
+    edge_last_use = {}
     url = 'http://files.grouplens.org/datasets/movielens/'
 
     def __init__(self,
@@ -976,6 +977,11 @@ class MovieLens(Dataset):
             
             return d
 
+        def age(e):
+            n0 = int(e[0].item())
+            n1 = int(e[1].item())
+            return self.timeframe - self.edge_last_use[(n0, n1)]
+
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
                 # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
@@ -999,7 +1005,9 @@ class MovieLens(Dataset):
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 eps = 2**(-4)
                 T = 2**20
-                imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                mult = 2
+
+                imps = torch.tensor([h(e) * (mult ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 imps =  imps* T + eps
                 print(imps)
                 p = torch.softmax(imps, dim=0)
@@ -1025,6 +1033,7 @@ class MovieLens(Dataset):
                     e1 = int(edge[1].item())
                     timeframe_no = self.edge_hist.get((e0, e1), 'future')
                     edge_dist[timeframe_no] = edge_dist.get(timeframe_no, 0) + 1
+                    self.edge_last_used[(e0, e1)] = self.timeframe
                 
                 print('edge dist: ' + ''.join([f'{t}:{edge_dist.get(t, 0)} ' for t in range(self.num_timeframes)]))
             else:
