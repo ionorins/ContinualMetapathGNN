@@ -998,13 +998,13 @@ class MovieLens(Dataset):
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 eps = 0
-                T = 100
+                T = 2**16
                 imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old]) * T + eps
                 print(imps)
                 p = torch.softmax(imps, dim=0)
                 print(min(p))
                 print(max(p))
-                print(np.mean(p))
+                print(torch.mean(p, dim=0))
                 print(p)
 
                 inds = np.random.choice(
