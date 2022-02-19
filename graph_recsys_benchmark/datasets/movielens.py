@@ -997,7 +997,7 @@ class MovieLens(Dataset):
                 ])
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                eps = 1e-8
+                eps = 1e-4
                 T = 100
                 imps = torch.tensor([h(e) for e in pos_edge_index_trans_np_old])/T + eps
                 print(imps)
