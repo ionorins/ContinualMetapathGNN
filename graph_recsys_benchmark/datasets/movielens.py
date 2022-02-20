@@ -985,7 +985,7 @@ class MovieLens(Dataset):
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                ro = 0.5
+                ro = 0.2
                 hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
 
                 pos_edge_index_trans_np = np.array(sorted(
