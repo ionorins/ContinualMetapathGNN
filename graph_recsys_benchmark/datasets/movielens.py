@@ -1005,7 +1005,7 @@ class MovieLens(Dataset):
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 eps = 0 #2**(-32)
-                T = 2**(-6)
+                T = 2**(-8)
                 b = 2
 
                 imps = torch.tensor([h(e) * age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
