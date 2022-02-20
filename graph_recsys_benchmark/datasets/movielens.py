@@ -1001,8 +1001,8 @@ class MovieLens(Dataset):
 
                 rand_samp = pos_edge_index_trans_np[self.len_ratings + int(ro * no_samples):]
                 inds = np.random.choice(
-                    no_samples - int(ro * no_samples), 
-                    no_samples
+                    no_samples, 
+                    no_samples - int(ro * no_samples)
                 )
                 rand_samp = rand_samp[inds]
 
