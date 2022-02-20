@@ -985,33 +985,60 @@ class MovieLens(Dataset):
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                ro = 0.2
-                hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
+                ro = 0.5
+                # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
 
-                pos_edge_index_trans_np = np.array(sorted(
-                    pos_edge_index_trans_np, 
-                    key=lambda e: hs[e.tobytes()],
-                    reverse=True,
-                ))
+                # pos_edge_index_trans_np = np.array(sorted(
+                #     pos_edge_index_trans_np, 
+                #     key=lambda e: hs[e.tobytes()],
+                #     reverse=True,
+                # ))
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
                 no_samples -= self.len_ratings
+                ch_no_samples = int(ro * no_samples)
+                rr_no_samples = no_samples - ch_no_samples
 
-                imp_samp = pos_edge_index_trans_np[:self.len_ratings + int(ro * no_samples)]
+                # imp_samp = pos_edge_index_trans_np[:self.len_ratings + int(ro * no_samples)]
 
-                rand_samp = pos_edge_index_trans_np[self.len_ratings + int(ro * no_samples):]
+                # rand_samp = pos_edge_index_trans_np[self.len_ratings + int(ro * no_samples):]
+                # inds = np.random.choice(
+                #     no_samples, 
+                #     no_samples - int(ro * no_samples)
+                # )
+                # rand_samp = rand_samp[inds]
+
+                pos_edge_index_trans_np_old = np.array([
+                    e for e in pos_edge_index_trans_np if not is_crt(e)
+                ])
+
+                pos_edge_index_trans_np_new = np.array([
+                    e for e in pos_edge_index_trans_np if is_crt(e)
+                ])
+
+                hs = [h(e) for e in pos_edge_index_trans_np_old]
+                hs /= sum(hs)
                 inds = np.random.choice(
-                    no_samples, 
-                    no_samples - int(ro * no_samples)
+                    len(pos_edge_index_trans_np_old), 
+                    no_samples,
+                    p = hs
                 )
-                rand_samp = rand_samp[inds]
+                ch_samples = pos_edge_index_trans_np_old[inds]
 
-                # pos_edge_index_trans_np_old = np.array([
-                #     e for e in pos_edge_index_trans_np if not is_crt(e)
-                # ])
-                # pos_edge_index_trans_np_new = np.array([
-                #     e for e in pos_edge_index_trans_np if is_crt(e)
-                # ])
+                pos_edge_index_trans_np_old = np.delete(
+                    pos_edge_index_trans_np_old,
+                    inds,
+                    0
+                )
+
+                ages = [2**age(e) for e in pos_edge_index_trans_np_old]
+                ages /= sum(ages)
+                inds = np.random.choice(
+                    len(pos_edge_index_trans_np_old), 
+                    no_samples,
+                    p = ages
+                )
+                rr_samples = pos_edge_index_trans_np_old[inds]
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 # eps = 0
@@ -1038,7 +1065,7 @@ class MovieLens(Dataset):
                 # )
 
                 pos_edge_index_trans_np = np.concatenate(
-                    (imp_samp, rand_samp)
+                    (ch_samples, rr_samples)
                 )
 
                 self.pos_edge_index_trans_np = pos_edge_index_trans_np
