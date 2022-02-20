@@ -1021,7 +1021,8 @@ class MovieLens(Dataset):
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
                     no_samples,
-                    p = hs
+                    p = hs,
+                    replace=True
                 )
                 ch_samples = pos_edge_index_trans_np_old[inds]
 
@@ -1036,7 +1037,8 @@ class MovieLens(Dataset):
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
                     no_samples,
-                    p = ages
+                    p = ages,
+                    replace=True
                 )
                 rr_samples = pos_edge_index_trans_np_old[inds]
 
