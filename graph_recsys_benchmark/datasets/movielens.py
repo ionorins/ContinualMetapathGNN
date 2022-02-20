@@ -1016,7 +1016,7 @@ class MovieLens(Dataset):
                     e for e in pos_edge_index_trans_np if is_crt(e)
                 ])
 
-                hs = [h(e).item() for e in pos_edge_index_trans_np_old]
+                hs = torch.tensor([h(e) for e in pos_edge_index_trans_np_old])
                 hs /= sum(hs)
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
@@ -1031,7 +1031,7 @@ class MovieLens(Dataset):
                     0
                 )
 
-                ages = [2**age(e) for e in pos_edge_index_trans_np_old]
+                ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old])
                 ages /= sum(ages)
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
