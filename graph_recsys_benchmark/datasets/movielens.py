@@ -968,7 +968,7 @@ class MovieLens(Dataset):
             return self.edge_hist.get((n0, n1), -1) == self.timeframe
 
         def h(e):
-            return 1
+            # return 1
             n0 = int(e[0].item())
             n1 = int(e[1].item())
             last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
@@ -1004,9 +1004,9 @@ class MovieLens(Dataset):
                 ])
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                eps = 0
-                T = 1
-                b = 1
+                eps = 2**(-32)
+                T = 2**8
+                b = 2
 
                 imps = torch.tensor([h(e) * (b ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 imps =  imps * T + eps
