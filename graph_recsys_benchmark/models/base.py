@@ -274,6 +274,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
     def forward(self, metapath_idx=None):
         x = self.x
+        x = F.batch_norm(x, x.mean(dim=-1), x.var(dim=-1))
         x = [module(x, self.meta_path_edge_index_list[idx]).unsqueeze(1)
              for idx, module in enumerate(self.pea_channels)]
         if metapath_idx is not None:
