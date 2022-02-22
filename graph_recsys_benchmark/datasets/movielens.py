@@ -985,7 +985,7 @@ class MovieLens(Dataset):
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
-                # ro = 0.5
+                ro = 0.5
                 # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
 
                 # pos_edge_index_trans_np = np.array(sorted(
@@ -996,8 +996,8 @@ class MovieLens(Dataset):
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
                 no_samples -= self.len_ratings
-                # ch_no_samples = int(ro * no_samples)
-                # rr_no_samples = no_samples - ch_no_samples
+                ch_no_samples = int(ro * no_samples)
+                rr_no_samples = no_samples - ch_no_samples
 
                 # imp_samp = pos_edge_index_trans_np[:self.len_ratings + int(ro * no_samples)]
 
@@ -1016,59 +1016,59 @@ class MovieLens(Dataset):
                     e for e in pos_edge_index_trans_np if is_crt(e)
                 ])
 
-                # hs = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
-                # hs /= sum(hs)
-                # inds = np.random.choice(
-                #     len(pos_edge_index_trans_np_old), 
-                #     no_samples,
-                #     p = hs,
-                #     replace=True
-                # )
-                # ch_samples = pos_edge_index_trans_np_old[inds]
-
-                # pos_edge_index_trans_np_old = np.delete(
-                #     pos_edge_index_trans_np_old,
-                #     inds,
-                #     0
-                # )
-
-                # ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
-                # ages /= sum(ages)
-                # inds = np.random.choice(
-                #     len(pos_edge_index_trans_np_old), 
-                #     no_samples,
-                #     p = ages,
-                #     replace=True
-                # )
-                # rr_samples = pos_edge_index_trans_np_old[inds]
-
-                # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                eps = 0
-                T = 2**16
-                b = 1
-
-                imps = torch.tensor([h(e) * (b ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
-                imps =  imps * T + eps
-                print(f'imps: {imps}, min: {min(imps)}, max: {max(imps)}, mean: {torch.mean(imps)}')
-                p = torch.softmax(imps, dim=0)
-                p /= sum(p)
-                print(f'probs: {p}, min: {min(p)}, max: {max(p)}')
-
+                hs = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                hs /= sum(hs)
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
-                    no_samples,
-                    p = p,
-                    replace = True
+                    ch_no_samples,
+                    p = hs,
+                    replace=True
                 )
-                pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
+                ch_samples = pos_edge_index_trans_np_old[inds]
 
-                pos_edge_index_trans_np = np.concatenate(
-                    (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
+                pos_edge_index_trans_np_old = np.delete(
+                    pos_edge_index_trans_np_old,
+                    inds,
+                    0
                 )
+
+                ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                ages /= sum(ages)
+                inds = np.random.choice(
+                    len(pos_edge_index_trans_np_old), 
+                    rr_no_samples,
+                    p = ages,
+                    replace=True
+                )
+                rr_samples = pos_edge_index_trans_np_old[inds]
+
+                # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                # eps = 0
+                # T = 2**16
+                # b = 1
+
+                # imps = torch.tensor([h(e) * (b ** age(e)) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                # imps =  imps * T + eps
+                # print(f'imps: {imps}, min: {min(imps)}, max: {max(imps)}, mean: {torch.mean(imps)}')
+                # p = torch.softmax(imps, dim=0)
+                # p /= sum(p)
+                # print(f'probs: {p}, min: {min(p)}, max: {max(p)}')
+
+                # inds = np.random.choice(
+                #     len(pos_edge_index_trans_np_old), 
+                #     no_samples,
+                #     p = p,
+                #     replace = True
+                # )
+                # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
                 # pos_edge_index_trans_np = np.concatenate(
-                #     (pos_edge_index_trans_np_new, ch_samples, rr_samples)
+                #     (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
                 # )
+
+                pos_edge_index_trans_np = np.concatenate(
+                    (pos_edge_index_trans_np_new, ch_samples, rr_samples)
+                )
 
                 self.pos_edge_index_trans_np = pos_edge_index_trans_np
 
