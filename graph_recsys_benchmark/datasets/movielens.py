@@ -1017,8 +1017,9 @@ class MovieLens(Dataset):
                 ])
 
                 p = torch.tensor([
-                    self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), -2)
+                    1 if self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), -2) else 0
                     for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                # print(p)
                 p /= sum(p)
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
