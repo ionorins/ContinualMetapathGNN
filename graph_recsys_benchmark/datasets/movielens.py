@@ -1074,9 +1074,9 @@ class MovieLens(Dataset):
                 # )
                 # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
-                # pos_edge_index_trans_np = np.concatenate(
-                #     (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
-                # )
+                pos_edge_index_trans_np = np.concatenate(
+                    (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
+                )
 
                 # pos_edge_index_trans_np = np.concatenate(
                 #     (pos_edge_index_trans_np_new, ch_samples, rr_samples)
