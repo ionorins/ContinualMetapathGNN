@@ -62,6 +62,7 @@ parser.add_argument('--ewc_lambda', type=float, default=80, help='')
 parser.add_argument('--theta', type=float, default=1, help='')
 parser.add_argument('--future_testing', type=str, default='false', help='')
 parser.add_argument('--train_between_emb_diff', type=str, default='false', help='')
+parser.add_argument('--out_filename', type=str, default='', help='')
 
 args = parser.parse_args()
 
@@ -117,6 +118,7 @@ train_args = {
     'metapath_test': args.metapath_test.lower() == 'true',
     'theta': args.theta,
     'train_between_emb_diff': args.train_between_emb_diff.lower() == 'true',
+    'out_filename': args.out_filename,
 }
 
 print('dataset params: {}'.format(dataset_args))

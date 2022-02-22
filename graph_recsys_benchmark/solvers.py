@@ -232,13 +232,13 @@ class BaseSolver(object):
                             )
 
                             if dataset.skip_timeframe and not dataset.future_testing:
-                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
+                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
                                 f.close()
                                 break
 
                             if dataset.future_testing and i > self.dataset_args['start_timeframe']:
-                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}future.csv', 'a')
+                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}future.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
                                 f.close()
 
@@ -552,6 +552,6 @@ class BaseSolver(object):
                     )
                     instantwrite(logger_file)
 
-                    f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}.csv', 'a')
+                    f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
                     f.write(f'{i},{str(HRs_per_run_np[-1][5])},{str(NDCGs_per_run_np[-1][5])}\n')
                     f.close()
