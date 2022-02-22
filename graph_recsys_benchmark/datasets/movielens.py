@@ -1016,6 +1016,13 @@ class MovieLens(Dataset):
                     e for e in pos_edge_index_trans_np if is_crt(e)
                 ])
 
+                print([
+                    self.edge_hist.get((e[0], e[1]), -1)
+                    for e in pos_edge_index_trans_np_old])
+                print([
+                    self.edge_last_use.get((e[0], e[1]), -2)
+                    for e in pos_edge_index_trans_np_old])
+
                 p = torch.tensor([
                     1 if self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), -2) else 0
                     for e in pos_edge_index_trans_np_old], dtype=torch.double)
