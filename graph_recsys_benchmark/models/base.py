@@ -224,8 +224,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
         super(PEABaseRecsysModel, self).__init__(**kwargs)
 
     def _init(self, **kwargs):
-        self.register_buffer('running_mean', torch.zeros(64))
-        self.register_buffer('running_var', torch.ones(64))
+        self.register_parameter('running_mean', None)
+        self.register_parameter('running_var', None)
 
         self.entity_aware = kwargs['entity_aware']
         self.entity_aware_coff = kwargs['entity_aware_coff']
