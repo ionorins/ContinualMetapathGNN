@@ -224,8 +224,8 @@ class PEABaseRecsysModel(GraphRecsysModel):
         super(PEABaseRecsysModel, self).__init__(**kwargs)
 
     def _init(self, **kwargs):
-        self.running_mean = None
-        self.running_var = None
+        self.register_buffer('running_mean', torch.zeros(64))
+        self.register_buffer('running_var', torch.ones(64))
 
         self.entity_aware = kwargs['entity_aware']
         self.entity_aware_coff = kwargs['entity_aware_coff']
@@ -277,7 +277,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
     def forward(self, metapath_idx=None):
         x = self.x
-        x = F.batch_norm(x, self.running_mean, self.running_var)
+        x = F.batch_norm(x, None, None)
         x = [module(x, self.meta_path_edge_index_list[idx]).unsqueeze(1)
              for idx, module in enumerate(self.pea_channels)]
         if metapath_idx is not None:
