@@ -1027,7 +1027,7 @@ class MovieLens(Dataset):
                 #     1 if self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), 0) else 0
                 #     for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 p = torch.tensor([
-                    self.timeframe - self.edge_hist.get((e[0], e[1]), 0) <= 5
+                    self.timeframe - self.edge_hist.get((e[0], e[1]), 0) <= 2
                     for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 print(p)
                 p /= sum(p)
