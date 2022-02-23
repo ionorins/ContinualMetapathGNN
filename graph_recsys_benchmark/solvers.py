@@ -333,8 +333,8 @@ class BaseSolver(object):
 
                                 model.eval()
 
-                                # df = pd.DataFrame(model.forward().cpu().detach().numpy())
-                                # df.to_csv(f'timeframe{i}emb.csv')
+                                df = pd.DataFrame(model.forward().cpu().detach().numpy())
+                                df.to_csv(f'timeframe{i}emb.csv')
                                 # df = pd.DataFrame(model.att[0].cpu().detach().numpy())
                                 # df.to_csv(f'timeframe{i}att.csv')
                                 
