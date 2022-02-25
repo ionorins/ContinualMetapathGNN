@@ -969,12 +969,12 @@ class MovieLens(Dataset):
 
         def h(e):
             # return 1
-            n0 = int(e[0].item())
-            n1 = int(e[1].item())
-            last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
-            crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
-            d = torch.norm(crt_e - last_e)
-            # d = np.random.random()
+            # n0 = int(e[0].item())
+            # n1 = int(e[1].item())
+            # last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
+            # crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
+            # d = torch.norm(crt_e - last_e)
+            d = np.random.random()
             
             return d
 
