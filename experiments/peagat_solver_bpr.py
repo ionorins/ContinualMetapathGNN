@@ -94,7 +94,7 @@ model_args = {
     'if_use_features': args.if_use_features.lower() == 'true',
     'emb_dim': args.emb_dim, 'hidden_size': args.hidden_size,
     'repr_dim': args.repr_dim, 'dropout': args.dropout,
-    'num_heads': args.num_heads, 'meta_path_steps': [int(i) for i in args.meta_path_steps.split(',')],
+    'num_heads': args.num_heads, 'meta_path_steps': [], #[int(i) for i in args.meta_path_steps.split(',')],
     'channel_aggr': args.channel_aggr,
     'entity_aware': args.entity_aware.lower() == 'true',
     'entity_aware_coff': args.entity_aware_coff,
