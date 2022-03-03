@@ -311,10 +311,10 @@ def update_pea_graph_input(dataset_args, train_args, dataset):
             meta_path_edge_indicis_8 = [tag2item_edge_index, torch.flip(user2item_edge_index, dims=[0])]
             meta_path_edge_indicis_9 = [tag2user_edge_index, user2item_edge_index]
             meta_path_edge_index_list = [
-                # meta_path_edge_indicis_1, meta_path_edge_indicis_2, 
-                # meta_path_edge_indicis_3,
-                # meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
-                # meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9
+                meta_path_edge_indicis_1, meta_path_edge_indicis_2, 
+                meta_path_edge_indicis_3,
+                meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
+                meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9
             ]
 
         if dataset_args['name'] == "25m":
@@ -353,11 +353,12 @@ def update_pea_graph_input(dataset_args, train_args, dataset):
             meta_path_edge_indicis_13 = [torch.flip(tag2user_edge_index, dims=[0]), tag2item_edge_index]
 
             meta_path_edge_index_list = [
-                meta_path_edge_indicis_1, meta_path_edge_indicis_2, meta_path_edge_indicis_3,
-                meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
-                meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9,
-                meta_path_edge_indicis_10, meta_path_edge_indicis_11, meta_path_edge_indicis_12,
-                meta_path_edge_indicis_13
+                meta_path_edge_indicis_1, meta_path_edge_indicis_2, 
+                # meta_path_edge_indicis_3,
+                # meta_path_edge_indicis_4, meta_path_edge_indicis_5, meta_path_edge_indicis_6,
+                # meta_path_edge_indicis_7, meta_path_edge_indicis_8, meta_path_edge_indicis_9,
+                # meta_path_edge_indicis_10, meta_path_edge_indicis_11, meta_path_edge_indicis_12,
+                # meta_path_edge_indicis_13
             ]
     elif dataset_args['dataset'] == "Yelp":
         user2item_edge_index = torch.from_numpy(dataset.edge_index_nps['user2item']).long().to(train_args['device'])
