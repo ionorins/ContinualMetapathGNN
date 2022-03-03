@@ -243,6 +243,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
 
         # Create graphs
         meta_path_edge_index_list = self.update_graph_input(kwargs['dataset'])
+        print(len(meta_path_edge_index_list), len(kwargs['meta_path_steps']))
         assert len(meta_path_edge_index_list) == len(kwargs['meta_path_steps'])
         self.meta_path_edge_index_list = meta_path_edge_index_list
 
