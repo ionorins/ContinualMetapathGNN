@@ -990,6 +990,8 @@ class MovieLens(Dataset):
             return torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
 
         def distance_to_se(e, selected_edges, distances):
+            if e in selected_edges:
+                return -1
             return sum(distances((e.tobytes(), se.tobytes())) for se in selected_edges)
 
         if last_emb is not None and self.continual_aspect == 'continual':
@@ -1021,7 +1023,7 @@ class MovieLens(Dataset):
                         index = np.argmax(distances_to_se)
 
                     selected_edges.append(pos_edge_index_trans_np[index])
-                    np.delete(pos_edge_index_trans_np, index, 0)
+                    # np.delete(pos_edge_index_trans_np, index, 0)
 
                 pos_edge_index_trans_np = np.array(selected_edges)
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
