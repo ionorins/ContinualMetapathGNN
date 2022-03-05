@@ -1006,19 +1006,23 @@ class MovieLens(Dataset):
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
                 edge_embs = {e.tobytes(): edge_emb(e) for e in pos_edge_index_trans_np}
+                print('CALCULATED EMBS')
+
                 distances = {
                     (e0.tobytes(), e1.tobytes()) :
                     torch.norm(edge_embs[e0.tobytes()] - edge_embs[e1.tobytes()])
                     for e0 in pos_edge_index_trans_np
                     for e1 in pos_edge_index_trans_np 
                 }
+                print('CALCULATED DISTANCES')
+
                 selected_edges = []
 
                 for i in range(no_samples):
-                    print(i/no_samples, end=' ')
+                    print(i/no_samples)
                     index = np.random.randint(no_samples)
                     if len(selected_edges) > 0:
-                        distances_to_se = [distance_to_se(e, selected_edges, edge_embs) for e in pos_edge_index_trans_np]
+                        distances_to_se = [distance_to_se(e, selected_edges, distances) for e in pos_edge_index_trans_np]
                         index = np.argmax(distances_to_se)
 
                     selected_edges.append(pos_edge_index_trans_np[index])
