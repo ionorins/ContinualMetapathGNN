@@ -984,7 +984,7 @@ class MovieLens(Dataset):
             n1 = int(e[1].item())
             return self.timeframe - self.edge_last_use.get((n0, n1), 0) - 1
         
-        @functools.cached_property
+        @functools.lru_cache(maxsize=None)
         def edge_emb(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
