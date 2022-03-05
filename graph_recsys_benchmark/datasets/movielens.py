@@ -989,11 +989,8 @@ class MovieLens(Dataset):
             n1 = int(e[1].item())
             return torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
 
-        def distance(e, selected_edges, edge_embs):
-            s = 0
-            for se in selected_edges:
-                s += torch.norm(edge_embs[e.tobytes()] - edge_embs[se.tobytes()]) 
-            return s
+        def distance_to_se(e, selected_edges, distances):
+            return sum(distances((e.tobytes(), se.tobytes())) for se in selected_edges)
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
@@ -1009,14 +1006,20 @@ class MovieLens(Dataset):
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
                 edge_embs = {e.tobytes(): edge_emb(e) for e in pos_edge_index_trans_np}
+                distances = {
+                    (e0.tobytes(), e1.tobytes()) :
+                    torch.norm(edge_embs[e0.tobytes()] - edge_embs[e1.tobytes()])
+                    for e0 in pos_edge_index_trans_np
+                    for e1 in pos_edge_index_trans_np 
+                }
                 selected_edges = []
 
                 for i in range(no_samples):
                     print(i/no_samples, end=' ')
                     index = np.random.randint(no_samples)
                     if len(selected_edges) > 0:
-                        distances = [distance(e, selected_edges, edge_embs) for e in pos_edge_index_trans_np]
-                        index = np.argmax(distances)
+                        distances_to_se = [distance_to_se(e, selected_edges, edge_embs) for e in pos_edge_index_trans_np]
+                        index = np.argmax(distances_to_se)
 
                     selected_edges.append(pos_edge_index_trans_np[index])
                     np.delete(pos_edge_index_trans_np, index, 0)
