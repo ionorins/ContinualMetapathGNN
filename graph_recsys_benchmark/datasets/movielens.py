@@ -8,6 +8,7 @@ import itertools
 from collections import Counter
 import tqdm
 import pickle
+import functools
 
 from .dataset import Dataset
 from torch_geometric.data import download_url, extract_zip
@@ -982,7 +983,8 @@ class MovieLens(Dataset):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
             return self.timeframe - self.edge_last_use.get((n0, n1), 0) - 1
-
+        
+        @functools.cache
         def edge_emb(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
