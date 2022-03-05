@@ -989,10 +989,11 @@ class MovieLens(Dataset):
             n1 = int(e[1].item())
             return torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
 
-        def distance_to_se(e, selected_edges, distances):
+        def distance_to_se(e, selected_edges, edge_embs):
             if e in selected_edges:
                 return -1
-            return sum(distances[e, se] for se in selected_edges)
+            avg_emb = sum(edge_embs[se] for se in selected_edges)/len(selected_edges)
+            return torch.norm(avg_emb - edge_embs[e])
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
