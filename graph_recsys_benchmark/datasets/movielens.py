@@ -992,7 +992,7 @@ class MovieLens(Dataset):
         def distance_to_se(e, selected_edges, distances):
             if e in selected_edges:
                 return -1
-            return sum(distances((e.tobytes(), se.tobytes())) for se in selected_edges)
+            return sum(distances[e, se] for se in selected_edges)
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
@@ -1011,21 +1011,22 @@ class MovieLens(Dataset):
                 print('CALCULATED EMBS')
 
                 distances = torch.cdist(edge_embs, edge_embs)
+                print(distances)
                 print('CALCULATED DISTANCES')
 
-                selected_edges = []
+                selected_indeces = []
 
                 for i in range(no_samples):
                     print(i/no_samples)
                     index = np.random.randint(no_samples)
-                    if len(selected_edges) > 0:
-                        distances_to_se = [distance_to_se(e, selected_edges, distances) for e in pos_edge_index_trans_np]
+                    if len(selected_indeces) > 0:
+                        distances_to_se = [distance_to_se(e, selected_indeces, distances) for e in range(no_samples)]
                         index = np.argmax(distances_to_se)
 
-                    selected_edges.append(pos_edge_index_trans_np[index])
+                    selected_indeces.append(index)
                     # np.delete(pos_edge_index_trans_np, index, 0)
 
-                pos_edge_index_trans_np = np.array(selected_edges)
+                pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 # no_samples -= self.len_ratings
                 # ch_no_samples = int(ro * no_samples)
