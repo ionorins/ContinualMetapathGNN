@@ -992,7 +992,7 @@ class MovieLens(Dataset):
         def distance(e, selected_edges, edge_embs):
             s = 0
             for se in selected_edges:
-                s += torch.norm(edge_embs[e] - edge_embs[se]) 
+                s += torch.norm(edge_embs[e.tobytes()] - edge_embs[se.tobytes()]) 
             return s
 
         if last_emb is not None and self.continual_aspect == 'continual':
@@ -1008,7 +1008,7 @@ class MovieLens(Dataset):
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
-                edge_embs = {e: edge_emb(e) for e in pos_edge_index_trans_np}
+                edge_embs = {e.tobytes(): edge_emb(e) for e in pos_edge_index_trans_np}
                 selected_edges = []
 
                 for i in range(no_samples):
