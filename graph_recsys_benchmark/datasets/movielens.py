@@ -1007,7 +1007,9 @@ class MovieLens(Dataset):
 
                 selected_edges = []
 
-                for _ in range(no_samples):
+                for i in range(no_samples):
+                    if i % 100 == 0:
+                        print(i/no_samples, end=' ')
                     index = np.random.randint(no_samples)
                     if len(selected_edges) > 0:
                         distances = [distance(e, selected_edges) for e in pos_edge_index_trans_np]
