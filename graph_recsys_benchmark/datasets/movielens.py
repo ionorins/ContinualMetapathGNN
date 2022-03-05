@@ -1005,7 +1005,7 @@ class MovieLens(Dataset):
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
-                edge_embs = torch.tensor([edge_emb(e) for e in pos_edge_index_trans_np])
+                edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
                 print('CALCULATED EMBS')
 
                 distances = torch.cdist(edge_embs, edge_embs)
