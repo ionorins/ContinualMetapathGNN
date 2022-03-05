@@ -1008,7 +1008,7 @@ class MovieLens(Dataset):
                 selected_edges = []
 
                 for i in range(no_samples):
-                    if i % 100 == 0:
+                    if i % 10 == 0:
                         print(i/no_samples, end=' ')
                     index = np.random.randint(no_samples)
                     if len(selected_edges) > 0:
