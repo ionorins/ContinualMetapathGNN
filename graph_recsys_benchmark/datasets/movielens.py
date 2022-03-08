@@ -1013,7 +1013,8 @@ class MovieLens(Dataset):
                 selected_indeces = []
                 distances_to_se = [0] * len(edge_embs)
 
-                for _ in range(no_samples):
+                for j in range(no_samples):
+                    print(j/no_samples)
                     index = np.random.randint(no_samples)
                     if len(selected_indeces) > 0:
                         for i in range(len(edge_embs)):
