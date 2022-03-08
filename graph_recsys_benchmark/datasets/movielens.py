@@ -1011,7 +1011,7 @@ class MovieLens(Dataset):
                 distances = torch.cdist(edge_embs, edge_embs)
 
                 selected_indeces = []
-                distances_to_se = torch.zeros(len(edge_embs))
+                distances_to_se = torch.zeros(len(edge_embs)).to('cuda')
 
                 for j in range(no_samples):
                     print(j/no_samples)
