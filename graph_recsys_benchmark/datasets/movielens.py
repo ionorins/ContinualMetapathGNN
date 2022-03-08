@@ -1020,7 +1020,7 @@ class MovieLens(Dataset):
                             if i in selected_indeces:
                                 distances_to_se[i] = -1
                             else:
-                                distances_to_se[i] += distances[i, selected_indeces[i]]
+                                distances_to_se[i] += distances[i, selected_indeces[-1]]
 
                         index = np.argmax(distances_to_se)
 
