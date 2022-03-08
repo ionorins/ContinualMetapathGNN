@@ -1013,15 +1013,14 @@ class MovieLens(Dataset):
                 selected_indeces = []
                 distances_to_se = torch.zeros(len(edge_embs)).to('cuda')
 
-                for j in range(no_samples):
-                    print(j/no_samples)
+                for _ in range(no_samples):
                     index = np.random.randint(no_samples)
                     if len(selected_indeces) > 0:
                         distances_to_se += distances[:, selected_indeces[-1]]
 
                         index = torch.argmax(distances_to_se)
 
-                    selected_indeces.append(index)
+                    selected_indeces.append(index.item())
 
                 pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
