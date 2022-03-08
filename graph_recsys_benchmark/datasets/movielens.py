@@ -1011,17 +1011,14 @@ class MovieLens(Dataset):
                 distances = torch.cdist(edge_embs, edge_embs)
 
                 selected_indeces = []
-                distances_to_se = [0] * len(edge_embs)
+                distances_to_se = torch.zeros(len(edge_embs))
 
                 for j in range(no_samples):
                     print(j/no_samples)
                     index = np.random.randint(no_samples)
                     if len(selected_indeces) > 0:
                         for i in range(len(edge_embs)):
-                            if i in selected_indeces:
-                                distances_to_se[i] = -1
-                            else:
-                                distances_to_se[i] += distances[i, selected_indeces[-1]]
+                            distances_to_se += distances[:, selected_indeces[-1]]
 
                         index = np.argmax(distances_to_se)
 
