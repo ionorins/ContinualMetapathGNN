@@ -989,11 +989,10 @@ class MovieLens(Dataset):
             n1 = int(e[1].item())
             return torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
 
-        def distance_to_se(e, selected_edges, edge_embs):
+        def distance_to_se(e, selected_edges, distances):
             if e in selected_edges:
                 return -1
-            avg_emb = sum(edge_embs[se] for se in selected_edges)/len(selected_edges)
-            return torch.norm(avg_emb - edge_embs[e])
+            return sum(distances[e, se] for se in selected_edges)
 
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
@@ -1009,23 +1008,23 @@ class MovieLens(Dataset):
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
                 edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
-                print('CALCULATED EMBS')
-
                 distances = torch.cdist(edge_embs, edge_embs)
-                print(distances)
-                print('CALCULATED DISTANCES')
 
                 selected_indeces = []
+                distances_to_se = [0] * len(edge_embs)
 
-                for i in range(no_samples):
-                    print(i/no_samples)
+                for _ in range(no_samples):
                     index = np.random.randint(no_samples)
                     if len(selected_indeces) > 0:
-                        distances_to_se = [distance_to_se(e, selected_indeces, distances) for e in range(no_samples)]
+                        for i in range(len(edge_embs)):
+                            if i in selected_indeces:
+                                distances_to_se[i] = -1
+                            else:
+                                distances_to_se[i] += distances[i, selected_indeces[i]]
+
                         index = np.argmax(distances_to_se)
 
                     selected_indeces.append(index)
-                    # np.delete(pos_edge_index_trans_np, index, 0)
 
                 pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
