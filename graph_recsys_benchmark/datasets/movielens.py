@@ -888,6 +888,7 @@ class MovieLens(Dataset):
 
                     else:
                         # ratings = ratings.sort_values('timestamp')
+                        ratings = ratings.sample(frac=1).reset_index(drop=True)
                         ratings.timestamp = ratings.index
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
