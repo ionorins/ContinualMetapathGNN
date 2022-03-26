@@ -887,7 +887,9 @@ class MovieLens(Dataset):
                         self.init_time = min_timestamp + self.start_timeframe * diff
 
                     else:
-                        ratings = ratings.sort_values('timestamp')
+                        # ratings = ratings.sort_values('timestamp')
+                        ratings.timestamp = ratings.index
+                        print(ratings.index)
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
                         stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings)) - 1
@@ -989,41 +991,35 @@ class MovieLens(Dataset):
             n1 = int(e[1].item())
             return torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
 
-        def distance_to_se(e, selected_edges, distances):
-            if e in selected_edges:
-                return -1
-            return sum(distances[e, se] for se in selected_edges)
-
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
                 # ro = 0
-                # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
+                hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
 
-                # pos_edge_index_trans_np = np.array(sorted(
-                #     pos_edge_index_trans_np, 
-                #     key=lambda e: hs[e.tobytes()],
-                #     reverse=True,
-                # ))
+                pos_edge_index_trans_np = np.array(sorted(
+                    pos_edge_index_trans_np, 
+                    key=lambda e: hs[e.tobytes()],
+                    reverse=True,
+                ))
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
-                edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
-                distances = torch.cdist(edge_embs, edge_embs)
+                # edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
+                # distances = torch.cdist(edge_embs, edge_embs)
 
-                selected_indeces = []
-                distances_to_se = torch.zeros(len(edge_embs)).to('cuda')
+                # selected_indeces = []
+                # distances_to_se = torch.zeros(len(edge_embs)).to('cuda')
 
-                for _ in range(no_samples):
-                    index = np.random.randint(no_samples)
-                    if len(selected_indeces) > 0:
-                        distances_to_se += distances[:, selected_indeces[-1]]
+                # for _ in range(no_samples):
+                #     index = np.random.randint(no_samples)
+                #     if len(selected_indeces) > 0:
+                #         distances_to_se += distances[:, selected_indeces[-1]]
+                #         index = torch.argmax(distances_to_se).item()
 
-                        index = torch.argmax(distances_to_se).item()
+                #     selected_indeces.append(index)
 
-                    selected_indeces.append(index)
-
-                pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
-                # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                # pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
+                pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
                 # no_samples -= self.len_ratings
                 # ch_no_samples = int(ro * no_samples)
                 # rr_no_samples = no_samples - ch_no_samples
