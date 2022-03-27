@@ -8,7 +8,7 @@ import itertools
 from collections import Counter
 import tqdm
 import pickle
-import functools
+from secrets import token_hex
 
 from .dataset import Dataset
 from torch_geometric.data import download_url, extract_zip
@@ -620,6 +620,7 @@ class MovieLens(Dataset):
                  pre_filter=None,
                  **kwargs):
 
+        self.token = token_hex(16)
         self.name = name.lower()
         self.type = kwargs['type']
         assert self.name in ['25m', 'latest-small']
@@ -656,7 +657,7 @@ class MovieLens(Dataset):
 
     @property
     def processed_file_names(self):
-        return ['ml_{}_{}_{}.pkl'.format(self.name, self.build_suffix(), self.continual_aspect)]
+        return ['ml_{}_{}_{}.pkl'.format(self.name, self.build_suffix(), self.token)]
 
     def download(self):
         path = download_url(self.url + self.raw_file_names, self.raw_dir)
