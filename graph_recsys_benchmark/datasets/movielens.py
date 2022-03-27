@@ -888,9 +888,9 @@ class MovieLens(Dataset):
                         self.init_time = min_timestamp + self.start_timeframe * diff
 
                     else:
-                        ratings = ratings.sort_values('timestamp')
-                        # ratings = ratings.sample(frac=1, random_state=42).reset_index(drop=True)
-                        # ratings.timestamp = ratings.index
+                        # ratings = ratings.sort_values('timestamp')
+                        ratings = ratings.sample(frac=1, random_state=42).reset_index(drop=True)
+                        ratings.timestamp = ratings.index
                         timeframe_size = round(len(ratings) / self.num_timeframes)
                         start_id = self.timeframe * timeframe_size
                         stop_id = min((self.timeframe + 1) * timeframe_size, len(ratings)) - 1
@@ -995,8 +995,8 @@ class MovieLens(Dataset):
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
                 # ro = 0
-                # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
-                hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
+                hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
+                # hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
                 pos_edge_index_trans_np = np.array(sorted(
                     pos_edge_index_trans_np, 
