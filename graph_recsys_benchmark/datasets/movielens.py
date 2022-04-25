@@ -1050,22 +1050,22 @@ class MovieLens(Dataset):
                 #     self.edge_last_use.get((e[0], e[1]), -2)
                 #     for e in pos_edge_index_trans_np_old])
 
-                p = torch.tensor([
-                    1 if self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), 0) else 0
-                    for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                # p = torch.tensor([
+                #     1 if self.edge_hist.get((e[0], e[1]), -1) == self.edge_last_use.get((e[0], e[1]), 0) else 0
+                #     for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 # p = torch.tensor([
                 #     self.timeframe - self.edge_hist.get((e[0], e[1]), 0) <= 2
                 #     for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 # print(p)
-                p /= sum(p)
+                # p /= sum(p)
                 # print(p)
-                inds = np.random.choice(
-                    len(pos_edge_index_trans_np_old), 
-                    no_samples,
-                    p = p,
-                    replace=True
-                )
-                pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
+                # inds = np.random.choice(
+                #     len(pos_edge_index_trans_np_old), 
+                #     no_samples,
+                #     p = p,
+                #     replace=True
+                # )
+                # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
                 # hs = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 # hs /= sum(hs)
@@ -1082,6 +1082,16 @@ class MovieLens(Dataset):
                 #     inds,
                 #     0
                 # )
+
+                ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                ages /= sum(ages)
+                inds = np.random.choice(
+                    len(pos_edge_index_trans_np_old), 
+                    no_samples,
+                    p = ages,
+                    replace=True
+                )
+                pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
                 # ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 # ages /= sum(ages)
