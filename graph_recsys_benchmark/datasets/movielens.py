@@ -973,12 +973,12 @@ class MovieLens(Dataset):
 
         def h(e):
             # return 1
-            # n0 = int(e[0].item())
-            # n1 = int(e[1].item())
-            # last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
-            # crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
-            # d = torch.norm(crt_e - last_e)
-            d = np.random.random()
+            n0 = int(e[0].item())
+            n1 = int(e[1].item())
+            last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
+            crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
+            d = torch.norm(crt_e - last_e)
+            # d = np.random.random()
             
             return d
 
@@ -1083,12 +1083,22 @@ class MovieLens(Dataset):
                 #     0
                 # )
 
-                ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
-                ages /= sum(ages)
+                # ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                # ages /= sum(ages)
+                # inds = np.random.choice(
+                #     len(pos_edge_index_trans_np_old), 
+                #     no_samples,
+                #     p = ages,
+                #     replace=True
+                # )
+                # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
+
+                imp = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                imp /= sum(imp)
                 inds = np.random.choice(
                     len(pos_edge_index_trans_np_old), 
                     no_samples,
-                    p = ages,
+                    p = imp,
                     replace=True
                 )
                 pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
