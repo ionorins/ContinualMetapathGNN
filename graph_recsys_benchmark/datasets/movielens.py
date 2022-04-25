@@ -995,14 +995,14 @@ class MovieLens(Dataset):
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
                 # ro = 0
-                # hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
+                hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
                 # hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
-                # pos_edge_index_trans_np = np.array(sorted(
-                #     pos_edge_index_trans_np, 
-                #     key=lambda e: hs[e.tobytes()],
-                #     reverse=True,
-                # ))
+                pos_edge_index_trans_np = np.array(sorted(
+                    pos_edge_index_trans_np, 
+                    key=lambda e: hs[e.tobytes()],
+                    reverse=True,
+                ))
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
@@ -1021,8 +1021,8 @@ class MovieLens(Dataset):
                 #     selected_indeces.append(index)
 
                 # pos_edge_index_trans_np = pos_edge_index_trans_np[selected_indeces]
-                # pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
-                no_samples -= self.len_ratings
+                pos_edge_index_trans_np = pos_edge_index_trans_np[:no_samples]
+                # no_samples -= self.len_ratings
                 # ch_no_samples = int(ro * no_samples)
                 # rr_no_samples = no_samples - ch_no_samples
 
@@ -1035,13 +1035,13 @@ class MovieLens(Dataset):
                 # )
                 # rand_samp = rand_samp[inds]
 
-                pos_edge_index_trans_np_old = np.array([
-                    e for e in pos_edge_index_trans_np if not is_crt(e)
-                ])
+                # pos_edge_index_trans_np_old = np.array([
+                #     e for e in pos_edge_index_trans_np if not is_crt(e)
+                # ])
 
-                pos_edge_index_trans_np_new = np.array([
-                    e for e in pos_edge_index_trans_np if is_crt(e)
-                ])
+                # pos_edge_index_trans_np_new = np.array([
+                #     e for e in pos_edge_index_trans_np if is_crt(e)
+                # ])
 
                 # print([
                 #     self.edge_hist.get((e[0], e[1]), -1)
@@ -1093,15 +1093,15 @@ class MovieLens(Dataset):
                 # )
                 # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
-                imp = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
-                imp /= sum(imp)
-                inds = np.random.choice(
-                    len(pos_edge_index_trans_np_old), 
-                    no_samples,
-                    p = imp,
-                    replace=True
-                )
-                pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
+                # imp = torch.tensor([h(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
+                # imp /= sum(imp)
+                # inds = np.random.choice(
+                #     len(pos_edge_index_trans_np_old), 
+                #     no_samples,
+                #     p = imp,
+                #     replace=True
+                # )
+                # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
                 # ages = torch.tensor([2**age(e) for e in pos_edge_index_trans_np_old], dtype=torch.double)
                 # ages /= sum(ages)
@@ -1132,9 +1132,9 @@ class MovieLens(Dataset):
                 # )
                 # pos_edge_index_trans_np_old = pos_edge_index_trans_np_old[inds]
 
-                pos_edge_index_trans_np = np.concatenate(
-                    (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
-                )
+                # pos_edge_index_trans_np = np.concatenate(
+                #     (pos_edge_index_trans_np_new, pos_edge_index_trans_np_old)
+                # )
 
                 # pos_edge_index_trans_np = np.concatenate(
                 #     (pos_edge_index_trans_np_new, ch_samples, rr_samples)
