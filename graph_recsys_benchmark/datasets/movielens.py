@@ -300,6 +300,7 @@ def generate_mlsmall_hete_graph(
         test_sorted_ratings = ratings[ratings.timestamp >= start]
     test_sorted_ratings = ratings.sort_values('uid')
 
+    # if online or single only keep ratings from current timeframe
     if single:
         ratings = ratings[ratings.timestamp >= start]
     else:
@@ -877,6 +878,7 @@ class MovieLens(Dataset):
                 movies = drop_infrequent_concept_from_str(movies, 'directors', self.num_feat_core)
                 movies = drop_infrequent_concept_from_str(movies, 'actors', self.num_feat_core)
 
+                # calculate start & stop s.t. timeframe timestamps in [start, stop)
                 if self.timeframe >= 0:
                     if self.equal_timespan_timeframes:
                         min_timestamp = ratings.timestamp.min()
@@ -919,6 +921,7 @@ class MovieLens(Dataset):
 
                 ratings = ratings[ratings.timestamp < self.stop]
 
+                # remember the provenence of the ratings
                 for rating in ratings.itertuples():
                     self.edge_hist[(rating.uid, rating.iid + dataset_property_dict['num_uids'])] = self.timeframe
       
@@ -966,11 +969,13 @@ class MovieLens(Dataset):
         print('before:')
         print(len(pos_edge_index_trans_np))
 
+        # edge is from current timeframe
         def is_crt(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
             return self.edge_hist.get((n0, n1), -1) == self.timeframe
 
+        # importance heuristic
         def h(e):
             # return 1
             n0 = int(e[0].item())
@@ -982,6 +987,7 @@ class MovieLens(Dataset):
             
             return d
 
+        # age of edge
         def age(e):
             n0 = int(e[0].item())
             n1 = int(e[1].item())
@@ -995,9 +1001,11 @@ class MovieLens(Dataset):
         if last_emb is not None and self.continual_aspect == 'continual':
             if epoch == 1:
                 # ro = 0
+                # save importances
                 hs = {e.tobytes() : (is_crt(e), h(e)) for e in pos_edge_index_trans_np}
                 # hs = {e.tobytes() : h(e) for e in pos_edge_index_trans_np}
 
+                # sort by importance
                 pos_edge_index_trans_np = np.array(sorted(
                     pos_edge_index_trans_np, 
                     key=lambda e: hs[e.tobytes()],
@@ -1006,6 +1014,7 @@ class MovieLens(Dataset):
 
                 no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
 
+                # below there are the different heuristics I tried out
                 # edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
                 # distances = torch.cdist(edge_embs, edge_embs)
 
@@ -1142,6 +1151,7 @@ class MovieLens(Dataset):
 
                 self.pos_edge_index_trans_np = pos_edge_index_trans_np
 
+                # calculate edge selection distribution and save the last use of the edges
                 edge_dist = {}
                 for edge in pos_edge_index_trans_np:
                     e0 = int(edge[0].item())

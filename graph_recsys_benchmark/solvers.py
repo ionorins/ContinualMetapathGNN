@@ -116,14 +116,18 @@ class BaseSolver(object):
         return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
 
     def run(self):
+        # save model weights under random name
         model_filename = token_hex(16)
-
+        
+        # if end timeframe is not specified, set it to be the last one
         if self.dataset_args['end_timeframe'] is None:
             self.dataset_args['end_timeframe'] = self.dataset_args['num_timeframes']
 
+        # iterate through timeframes
         for i in range(self.dataset_args['start_timeframe'], self.dataset_args['end_timeframe']):
             print(f'Timeframe {i}')
 
+            # delete checkpoints so that the program does not load wrong weights
             import shutil
 
             shutil.rmtree('checkpoint/loggers', ignore_errors=True)
@@ -231,6 +235,7 @@ class BaseSolver(object):
                                 )
                             )
 
+                            # save metrics
                             if dataset.skip_timeframe and not dataset.future_testing:
                                 f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
                                 f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
@@ -333,8 +338,11 @@ class BaseSolver(object):
 
                                 model.eval()
 
-                                df = pd.DataFrame(model.forward().cpu().detach().numpy())
-                                df.to_csv(f'timeframe{i}emb.csv')
+                                # save embeddings
+                                # df = pd.DataFrame(model.forward().cpu().detach().numpy())
+                                # df.to_csv(f'timeframe{i}emb.csv')
+
+                                # save attention values
                                 # df = pd.DataFrame(model.att[0].cpu().detach().numpy())
                                 # df.to_csv(f'timeframe{i}att.csv')
                                 
@@ -395,6 +403,7 @@ class BaseSolver(object):
                                 torch.cuda.synchronize()
                         t_end = time.perf_counter()
 
+                        # save ewc parameters and model
                         model.register_ewc_params(dataset.train_data)
                         print('REGISTERED EWC PARAMS')
                         torch.save(model, model_filename + '.pth')
@@ -452,7 +461,6 @@ class BaseSolver(object):
                         clearcache()
 
                 if self.dataset_args['model'][:3] == 'PEA' and self.train_args['metapath_test']:
-                    print('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEELP' * 100)
                     run = 1
                     if self.dataset_args['dataset'] == 'Movielens':
                         epoch = 30

@@ -105,12 +105,14 @@ class GraphRecsysModel(torch.nn.Module):
                 with torch.no_grad():
                     self.cached_repr = self.forward()
 
+    # EWC code
     def _update_mean_params(self):
         for param_name, param in self.named_parameters():
             _buff_param_name = param_name.replace('.', '__')
             self.register_buffer(_buff_param_name +
                                  '_estimated_mean', param.data.clone())
 
+    # EWC code
     def _update_fisher_params(self, pos_neg_pair_t):
         log_likelihood = self.real_loss(pos_neg_pair_t)
         grad_log_liklihood = autograd.grad(log_likelihood, self.parameters(), allow_unused=True)
@@ -123,6 +125,7 @@ class GraphRecsysModel(torch.nn.Module):
             self.register_buffer(_buff_param_name +
                                  '_estimated_fisher', param.data.clone() ** 2)
 
+    # EWC code
     def _save_fisher_params(self):
         for param_name, param in self.named_parameters():
             _buff_param_name = param_name.replace('.', '__')
@@ -136,10 +139,12 @@ class GraphRecsysModel(torch.nn.Module):
                 estimated_fisher), np.min(estimated_fisher))
             break
 
+    # EWC code
     def register_ewc_params(self, pos_neg_pair_t):
         self._update_fisher_params(pos_neg_pair_t)
         self._update_mean_params()
 
+    # coputes EWC part of the loss
     def _compute_consolidation_loss(self):
         losses = []
         for param_name, param in self.named_parameters():
@@ -160,6 +165,7 @@ class GraphRecsysModel(torch.nn.Module):
                 pass
         return 1 * (self.ewc_lambda / 2) * sum(losses)
 
+    # total loss = real loss + eewc loss
     def loss(self, pos_neg_pair_t):
         loss1 = self.real_loss(pos_neg_pair_t)
         loss2 = 0
