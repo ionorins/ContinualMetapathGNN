@@ -75,6 +75,7 @@ if not torch.cuda.is_available() or args.device == 'cpu':
     device = 'cpu'
 else:
     device = 'cuda:{}'.format(args.gpu_idx)
+    device = 'cuda'
 
 # Setup args
 dataset_args = {
