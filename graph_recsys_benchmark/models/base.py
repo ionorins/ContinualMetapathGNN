@@ -45,12 +45,28 @@ class GraphRecsysModel(torch.nn.Module):
     def reset_parameters(self):
         raise NotImplementedError
 
-    def real_loss(self, pos_neg_pair_t):
+    def real_loss(self, data):
         if self.training:
             self.cached_repr = self.forward()
+        pos_neg_pair_t, y = data
         pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
         neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2])
-        cf_loss = -(pos_pred - neg_pred).sigmoid().log().sum()
+
+        # mse loss
+        pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
+        neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
+        cf_loss = pos_mse_loss + neg_mse_loss
+
+        # bpr loss
+        # cf_loss = -(pos_pred - neg_pred).sigmoid().log().sum()
+
+        # mse loss
+        # pos_mse_loss = ((pos_pred.sigmoid() - 1) ** 2).mean()
+        # neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
+        # cf_loss = pos_mse_loss + neg_mse_loss
+
+        # cross entropy loss
+        # cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([torch.ones_like(pos_pred), torch.zeros_like(neg_pred)], dim=0))
 
         if self.entity_aware and self.training:
             pos_item_entity, neg_item_entity = pos_neg_pair_t[:,
@@ -140,7 +156,8 @@ class GraphRecsysModel(torch.nn.Module):
             break
 
     # EWC code
-    def register_ewc_params(self, pos_neg_pair_t):
+    def register_ewc_params(self, data):
+        pos_neg_pair_t = data
         self._update_fisher_params(pos_neg_pair_t)
         self._update_mean_params()
 

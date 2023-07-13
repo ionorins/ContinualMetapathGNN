@@ -9,7 +9,7 @@ This project is a fork of the [blindsubmission1/PEAGNN](https://github.com/blind
 
 An example command for running the project from the `experimets` directory:
 ```
-python3 peagat_solver_bpr.py --dataset=Movielens --dataset_name=latest-small --num_core=10 --num_feat_core=10 --sampling_strategy=unseen --entity_aware=false --dropout=0 --emb_dim=64 --repr_dim=16 --hidden_size=64 --meta_path_steps=2,2,2,2,2,2,2,2,2 --entity_aware_coff=0.1 --init_eval=true --gpu_idx=3 --runs=1 --epochs=30 --batch_size=1024 --save_every_epoch=40 --metapath_test=false --num_timeframes=25 --equal_timespan_timeframes=false --ewc_lambda=0 --theta=1.5 --continual_aspect=continual --future_testing=true --train_between_emb_diff=false 
+python3 peagat_solver_bpr.py --dataset=Movielens --dataset_name=latest-small --num_core=10 --num_feat_core=10 --sampling_strategy=unseen --entity_aware=false --dropout=0 --emb_dim=64 --repr_dim=16 --hidden_size=64 --meta_path_steps=2,2,2,2,2,2,2,2,2 --entity_aware_coff=0.1 --init_eval=false --gpu_idx=3 --runs=1 --epochs=2 --batch_size=1024 --save_every_epoch=40 --metapath_test=false --num_timeframes=100 --equal_timespan_timeframes=false --ewc_lambda=0 --theta=2 --continual_aspect=continual --future_testing=false --train_between_emb_diff=false 
 ``` 
 
 The history of the HR and nDCG over timeframes will be saved in the HR directory.

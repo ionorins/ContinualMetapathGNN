@@ -76,7 +76,8 @@ class BaseSolver(object):
             if self.model_args['model_type'] == 'MF':
                 pos_neg_pair_t[:, 0] -= dataset.e2nid_dict['uid'][0]
                 pos_neg_pair_t[:, 1:] -= dataset.e2nid_dict['iid'][0]
-            loss = model.loss(pos_neg_pair_t).detach().cpu().item()
+            y = torch.tensor([dataset.edge_values.get((user.item(), item.item()), 0) for user, item in pos_neg_pair_t[:, :2]]).to(self.train_args['device'])
+            loss = model.loss((pos_neg_pair_t, y)).detach().cpu().item()
 
             pos_u_nids_t = torch.from_numpy(np.array([u_nid for _ in range(len(pos_i_nids))])).to(
                 self.train_args['device'])
@@ -266,7 +267,13 @@ class BaseSolver(object):
 
                         if start_epoch <= self.train_args['epochs']:
                             # Start training model
-                            for epoch in range(start_epoch, self.train_args['epochs'] + 1):
+                            # if first timeframe
+
+                            no_epochs = self.train_args['epochs'] + 1
+                            if i < self.train_args['theta']:
+                                no_epochs = int(self.train_args['theta'] * self.train_args['epochs'] / (i + 1) + 1)
+
+                            for epoch in range(start_epoch, no_epochs):
                                 loss_per_batch = []
                                 model.train()
                                 dataset.cf_negative_sampling(
@@ -296,7 +303,8 @@ class BaseSolver(object):
                                         elif self.model_args['loss_type'] == 'BPR':
                                             batch[:, 0] -= dataset.e2nid_dict['uid'][0]
                                             batch[:, 1:] -= dataset.e2nid_dict['iid'][0]
-                                    batch = batch.to(self.train_args['device'])
+                                        
+                                    batch = batch[0].to(self.train_args['device']), batch[1].to(self.train_args['device'])
 
                                     optimizer.zero_grad()
                                     loss = model.loss(batch)
@@ -404,8 +412,8 @@ class BaseSolver(object):
                         t_end = time.perf_counter()
 
                         # save ewc parameters and model
-                        model.register_ewc_params(dataset.train_data)
-                        print('REGISTERED EWC PARAMS')
+                        # model.register_ewc_params(dataset.train_data)
+                        # print('REGISTERED EWC PARAMS')
                         torch.save(model, model_filename + '.pth')
 
                         HRs_per_run_np = np.vstack(

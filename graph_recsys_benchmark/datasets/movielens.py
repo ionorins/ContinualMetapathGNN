@@ -307,6 +307,7 @@ def generate_mlsmall_hete_graph(
         ratings = ratings[ratings.timestamp >= init_time]
 
     sorted_ratings = ratings.sort_values('uid')
+    edge_values = {}
     pbar = tqdm.tqdm(unique_uids, total=len(unique_uids))
     for uid in pbar:
         pbar.set_description('Creating the edges for the user {}'.format(uid))
@@ -324,12 +325,20 @@ def generate_mlsmall_hete_graph(
         train_pos_uid_ratings = uid_ratings
 
         if not future_testing:
-            train_pos_uid_iids = train_pos_uid_iids[:-1]  # Use leave one out setup
-            train_pos_uid_ratings = train_pos_uid_ratings[:-1]            
+            if len(train_pos_uid_iids) == 0:
+                continue
+            last_rating_idx = len(train_pos_uid_ratings) - 1
+            for i in range(last_rating_idx, -1, -1):
+                if train_pos_uid_ratings[i] >= 3.5:
+                    edge_values[(unid, e2nid_dict['iid'][train_pos_uid_iids[i]])] = train_pos_uid_ratings[i]
+                    test_pos_uid_iids = [train_pos_uid_iids[i]]
+                    test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
+                    train_pos_uid_iids.pop(i)
+                    train_pos_uid_ratings = np.delete(train_pos_uid_ratings, i)
+                    break
+                    
 
         train_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in train_pos_uid_iids]
-        test_pos_uid_iids = list(unfiltered_uid_iids[-1:])
-        test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
         neg_uid_iids = list(set(unique_iids) - set(unfiltered_uid_iids))
         neg_uid_inids = [e2nid_dict['iid'][iid] for iid in neg_uid_iids]
 
@@ -366,6 +375,13 @@ def generate_mlsmall_hete_graph(
     dataset_property_dict['types'] = types
     dataset_property_dict['num_nodes_dict'] = num_nodes_dict
     dataset_property_dict['type_accs'] = type_accs
+
+    user2item = dataset_property_dict['edge_index_nps']['user2item']
+    ratings = dataset_property_dict['rating_np']
+
+    edge_values.update({(int(user2item[0][i]), int(user2item[1][i])): ratings[i] / 5 for i in range(len(user2item[0]))})
+
+    dataset_property_dict['edge_values'] = edge_values
 
     return dataset_property_dict
 
@@ -978,12 +994,12 @@ class MovieLens(Dataset):
         # importance heuristic
         def h(e):
             # return 1
-            n0 = int(e[0].item())
-            n1 = int(e[1].item())
-            last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
-            crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
-            d = torch.norm(crt_e - last_e)
-            # d = np.random.random()
+            # n0 = int(e[0].item())
+            # n1 = int(e[1].item())
+            # last_e = torch.cat([last_emb[n0], last_emb[n1]], dim=-1)
+            # crt_e  = torch.cat([crt_emb[n0], crt_emb[n1]], dim=-1)
+            # d = torch.norm(crt_e - last_e)
+            d = np.random.random()
             
             return d
 
@@ -1282,6 +1298,15 @@ class MovieLens(Dataset):
         self.train_data = train_data_t[shuffle_idx]
         self.train_data_length = train_data_t.shape[0]
 
+        user_item_pairs = list(zip(self.train_data.t()[0], self.train_data.t()[1]))
+
+        # For each tuple in the list, get the edge value (rating) for the corresponding user-item pair from the `edge_values` dictionary
+        edge_values = [self.edge_values[(user.item(), item.item())] for user, item in user_item_pairs]
+
+        # Create a tensor from the list of edge values and transpose it
+        self.y = torch.tensor(edge_values, dtype=torch.float).t()
+
+
     def negative_sampling(self):
         """
         Replace positive items with random/unseen items
@@ -1432,6 +1457,7 @@ class MovieLens(Dataset):
             idx = idx.to_list() if torch.is_tensor(idx) else idx
 
             train_data_t = self.train_data[idx]
+            y = self.y[idx]
 
             if self.entity_aware:
                 inid = train_data_t[1].cpu().detach().item()
@@ -1466,7 +1492,8 @@ class MovieLens(Dataset):
                 pos_neg_entities = torch.tensor([pos_item_entity_nid, neg_item_entity_nid, item_entity_mask, pos_user_entity_nid, neg_user_entity_nid, user_entity_mask], dtype=torch.long)
 
                 train_data_t = torch.cat([train_data_t, pos_neg_entities], dim=-1)
-            return train_data_t
+
+            return train_data_t, y
 
     def __setitem__(self, key, value):
         """Sets the attribute :obj:`key` to :obj:`value`."""
