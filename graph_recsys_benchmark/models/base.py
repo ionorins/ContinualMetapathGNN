@@ -53,6 +53,7 @@ class GraphRecsysModel(torch.nn.Module):
         neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2])
 
         # mse loss
+        # y = y.reshape(pos_pred.shape)
         # pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
         # neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
         # cf_loss = pos_mse_loss + neg_mse_loss
