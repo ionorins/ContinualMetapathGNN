@@ -98,7 +98,7 @@ class BaseSolver(object):
             neg_pred = model.predict(neg_u_nids_t, neg_i_nids_t).reshape(-1)
 
             # calculate accuracy
-            acc = torch.cat([pos_pred.sigmoid() >= 0.5, neg_pred.sigmoid() < 0.5]).float().mean().item()
+            acc = torch.cat([pos_pred >= 0.5, neg_pred < 0.5]).float().mean().item()
             accs = np.vstack([accs, acc])
 
 
