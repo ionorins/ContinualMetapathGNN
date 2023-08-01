@@ -2,6 +2,7 @@ import os
 import random as rd
 from secrets import token_hex
 import numpy as np
+from sklearn.metrics import r2_score, accuracy_score
 import torch
 import time
 import pandas as pd
@@ -50,6 +51,7 @@ class BaseSolver(object):
         """
         HRs, NDCGs, AUC, eval_losses = np.zeros((0, 16)), np.zeros(
             (0, 16)), np.zeros((0, 1)), np.zeros((0, 1))
+        accs = np.zeros((0, 1))
 
         test_pos_unid_inid_map, neg_unid_inid_map = \
             dataset.test_pos_unid_inid_map, dataset.neg_unid_inid_map
@@ -95,26 +97,40 @@ class BaseSolver(object):
             pos_pred = model.predict(pos_u_nids_t, pos_i_nids_t).reshape(-1)
             neg_pred = model.predict(neg_u_nids_t, neg_i_nids_t).reshape(-1)
 
+            # calculate accuracy
+            acc = torch.cat([pos_pred >= 0.5, neg_pred < 0.5]).float().mean().item()
+            accs = np.vstack([accs, acc])
+
+
             _, indices = torch.sort(
                 torch.cat([pos_pred, neg_pred]), descending=True)
             hit_vec = (indices < len(pos_i_nids)).cpu().detach().numpy()
             pos_pred = pos_pred.cpu().detach().numpy()
             neg_pred = neg_pred.cpu().detach().numpy()
 
+            # ground_truth = [dataset.edge_values[(u_nid, i_nid)] for i_nid in pos_i_nids]
+            # apply sigmoid to predictions
+            # sigmoid = lambda x: 1 / (1 + np.exp(-x))
+            # pos_pred = sigmoid(pos_pred)
+            # calculate r2 score
+            # r2 = r2_score(ground_truth, pos_pred)
+            # compute accuracy
+            # acc = (ground_truth == np.round(pos_pred, 1)).mean()
+
             HRs = np.vstack([HRs, hit(hit_vec)])
             NDCGs = np.vstack([NDCGs, ndcg(hit_vec)])
             AUC = np.vstack([AUC, auc(pos_pred, neg_pred)])
             eval_losses = np.vstack([eval_losses, loss])
             test_bar.set_description(
-                'Run {}, epoch: {}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
+                'Run {}, epoch: {}, acc: {:.4f} HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
                 'NDCG@5: {:.4f}, NDCG@10: {:.4f}, NDCG@15: {:.4f}, NDCG@20: {:.4f}, AUC: {:.4f}, eval loss: {:.4f} '.format(
-                    run, epoch, HRs.mean(axis=0)[0], HRs.mean(
+                    run, epoch, accs.mean(axis=0)[0], HRs.mean(axis=0)[0], HRs.mean(
                         axis=0)[5], HRs.mean(axis=0)[10], HRs.mean(axis=0)[15],
                     NDCGs.mean(axis=0)[0], NDCGs.mean(axis=0)[5], NDCGs.mean(
                         axis=0)[10], NDCGs.mean(axis=0)[15],
                     AUC.mean(axis=0)[0], eval_losses.mean(axis=0)[0])
             )
-        return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0)
+        return np.mean(HRs, axis=0), np.mean(NDCGs, axis=0), np.mean(AUC, axis=0), np.mean(eval_losses, axis=0), np.mean(accs, axis=0)
 
     def run(self):
         # save model weights under random name
@@ -220,7 +236,7 @@ class BaseSolver(object):
                                     model = torch.load(model_filename + '.pth')
                             model.eval()
                             with torch.no_grad():
-                                HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np = \
+                                HRs_before_np, NDCGs_before_np, AUC_before_np, cf_eval_loss_before_np, accs_before_np = \
                                     self.metrics(run, 0, model, dataset)
 
                             if dataset.continual_aspect in ['single', 'retrained']:
@@ -238,15 +254,15 @@ class BaseSolver(object):
 
                             # save metrics
                             if dataset.skip_timeframe and not dataset.future_testing:
-                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
-                                f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
-                                f.close()
+                                # f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
+                                # f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
+                                # f.close()
                                 break
 
                             if dataset.future_testing and i > self.dataset_args['start_timeframe']:
-                                f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}future.csv', 'a')
-                                f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
-                                f.close()
+                                # f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}future.csv', 'a')
+                                # f.write(f'{i},{str(HRs_before_np[5])},{str(NDCGs_before_np[5])}\n')
+                                # f.close()
 
                                 if dataset.continual_aspect == 'pretrained':
                                     break
@@ -323,7 +339,7 @@ class BaseSolver(object):
                                     if (self.dataset_args['dataset'] == 'Movielens' and epoch == 30) or (self.dataset_args['dataset'] == 'Yelp' and epoch == 20):
                                         for metapath_idx in range(len(self.model_args['meta_path_steps'])):
                                             model.eval(metapath_idx)
-                                            HRs, NDCGs, AUC, eval_loss = self.metrics(
+                                            HRs, NDCGs, AUC, eval_loss, accs = self.metrics(
                                                 run, epoch, model, dataset)
                                             print(
                                                 'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
@@ -355,7 +371,7 @@ class BaseSolver(object):
                                 # df.to_csv(f'timeframe{i}att.csv')
                                 
                                 with torch.no_grad():
-                                    HRs, NDCGs, AUC, eval_loss = self.metrics(
+                                    HRs, NDCGs, AUC, eval_loss, accs = self.metrics(
                                         run, epoch, model, dataset)
 
                                 # Sumarize the epoch
@@ -406,6 +422,9 @@ class BaseSolver(object):
                                 )
                                 instantwrite(logger_file)
                                 clearcache()
+                            f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
+                            f.write(f'{i},{str(accs[0])},{str(HRs[5])},{str(NDCGs[5])}\n')
+                            f.close()
 
                             if torch.cuda.is_available():
                                 torch.cuda.synchronize()
@@ -510,7 +529,7 @@ class BaseSolver(object):
                                                                            self.train_args['device'])
                     for metapath_idx in range(len(self.model_args['meta_path_steps'])):
                         model.eval(metapath_idx)
-                        HRs, NDCGs, AUC, eval_loss = self.metrics(
+                        HRs, NDCGs, AUC, eval_loss, accs = self.metrics(
                             run, epoch, model, dataset)
                         print(
                             'Run: {}, epoch: {}, exclude path:{}, HR@5: {:.4f}, HR@10: {:.4f}, HR@15: {:.4f}, HR@20: {:.4f}, '
@@ -568,6 +587,6 @@ class BaseSolver(object):
                     )
                     instantwrite(logger_file)
 
-                    f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
-                    f.write(f'{i},{str(HRs_per_run_np[-1][5])},{str(NDCGs_per_run_np[-1][5])}\n')
-                    f.close()
+                    # f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
+                    # f.write(f'{i},{str(HRs_per_run_np[-1][5])},{str(NDCGs_per_run_np[-1][5])}\n')
+                    # f.close()

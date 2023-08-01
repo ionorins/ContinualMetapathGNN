@@ -140,6 +140,7 @@ def generate_mlsmall_hete_graph(
     unique_iids = list(np.sort(ratings.iid.unique()))
     num_iids = len(unique_iids)
 
+    future_ratings = ratings[ratings.timestamp >= stop]
     ratings = ratings[ratings.timestamp < stop]
 
     unique_genres = list(movies.keys()[3:22])
@@ -296,9 +297,15 @@ def generate_mlsmall_hete_graph(
     rating_np = np.zeros((0,))
     user2item_edge_index_np = np.zeros((2, 0))
 
-    if future_testing:
-        test_sorted_ratings = ratings[ratings.timestamp >= start]
-    test_sorted_ratings = ratings.sort_values('uid')
+    # if future_testing:
+    #     test_sorted_ratings = ratings[ratings.timestamp >= start]
+    unfiltered_sorted_ratings = ratings.sort_values('uid')
+
+    unique_uids = list(np.sort(ratings.uid.unique()))
+    unique_iids = list(np.sort(ratings.iid.unique()))
+
+    # filter out unseed iids from future_ratings
+    future_ratings = future_ratings[future_ratings.iid.isin(unique_iids)]
 
     # if online or single only keep ratings from current timeframe
     if single:
@@ -308,33 +315,46 @@ def generate_mlsmall_hete_graph(
 
     sorted_ratings = ratings.sort_values('uid')
     edge_values = {}
+
     pbar = tqdm.tqdm(unique_uids, total=len(unique_uids))
     for uid in pbar:
         pbar.set_description('Creating the edges for the user {}'.format(uid))
         uid_ratings = sorted_ratings[sorted_ratings.uid == uid].sort_values('timestamp')
         uid_iids = uid_ratings.iid.to_numpy()
-        uid_ratings = uid_ratings.rating.to_numpy()
+        uid_edge_values = uid_ratings.rating.to_numpy()
+        uid_timestamps = uid_ratings.timestamp.to_numpy()
 
-        unfiltered_uid_ratings = test_sorted_ratings[test_sorted_ratings.uid == uid].sort_values('timestamp')
+        unfiltered_uid_ratings = unfiltered_sorted_ratings[unfiltered_sorted_ratings.uid == uid].sort_values('timestamp')
         unfiltered_uid_iids = unfiltered_uid_ratings.iid.to_numpy()
         unfiltered_uid_ratings = unfiltered_uid_ratings.rating.to_numpy()
 
         unid = e2nid_dict['uid'][uid]
 
         train_pos_uid_iids = list(uid_iids)
-        train_pos_uid_ratings = uid_ratings
+        train_pos_uid_ratings = uid_edge_values
+        test_pos_uid_inids = []
+
+        # uid_test_ratings = future_ratings[future_ratings.uid == uid].sort_values('timestamp')
+        # uid_test_iids = uid_test_ratings.iid.to_numpy()
+        # uid_test_ratings = uid_test_ratings.rating.to_numpy()
+        # test_pos_uid_iids = list(uid_test_iids)[:4]
+        # test_pos_uid_ratings = uid_test_ratings[:4]
+        # test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
+
+        # for nid, rating in zip(test_pos_uid_inids, test_pos_uid_ratings):
+        #     edge_values[(unid, nid)] = rating / 5
 
         if not future_testing:
             if len(train_pos_uid_iids) == 0:
                 continue
-            last_rating_idx = len(train_pos_uid_ratings) - 1
+            last_rating_idx = len(uid_edge_values) - 1
             for i in range(last_rating_idx, -1, -1):
-                if train_pos_uid_ratings[i] >= 3.5:
-                    edge_values[(unid, e2nid_dict['iid'][train_pos_uid_iids[i]])] = train_pos_uid_ratings[i]
+                if uid_edge_values[i] >= 0 and uid_timestamps[i] >= start:
+                    edge_values[(unid, e2nid_dict['iid'][train_pos_uid_iids[i]])] = uid_edge_values[i] / 5
                     test_pos_uid_iids = [train_pos_uid_iids[i]]
                     test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
                     train_pos_uid_iids.pop(i)
-                    train_pos_uid_ratings = np.delete(train_pos_uid_ratings, i)
+                    uid_edge_values = np.delete(uid_edge_values, i)
                     break
                     
 
@@ -342,7 +362,9 @@ def generate_mlsmall_hete_graph(
         neg_uid_iids = list(set(unique_iids) - set(unfiltered_uid_iids))
         neg_uid_inids = [e2nid_dict['iid'][iid] for iid in neg_uid_iids]
 
-        test_pos_unid_inid_map[unid] = test_pos_uid_inids
+        if len(test_pos_uid_inids) > 0:
+            test_pos_unid_inid_map[unid] = test_pos_uid_inids
+
         neg_unid_inid_map[unid] = neg_uid_inids
 
         unid_user2item_edge_index_np = np.array(
@@ -351,6 +373,8 @@ def generate_mlsmall_hete_graph(
         user2item_edge_index_np = np.hstack([user2item_edge_index_np, unid_user2item_edge_index_np])
 
         rating_np = np.concatenate([rating_np, train_pos_uid_ratings])
+
+    print(f'Total testing inids: {sum([len(v) for v in test_pos_unid_inid_map.values()])}')
     dataset_property_dict['rating_np'] = rating_np
     edge_index_nps['user2item'] = user2item_edge_index_np
 
@@ -1203,7 +1227,7 @@ class MovieLens(Dataset):
                 u_nids = pos_samples_np[:, 0]
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
-                    negative_inids = self.test_pos_unid_inid_map[u_nid] + self.neg_unid_inid_map[u_nid]
+                    negative_inids = self.test_pos_unid_inid_map.get(u_nid, []) + self.neg_unid_inid_map[u_nid]
                     negative_inids = np.random.choice(negative_inids, size=(self.num_negative_samples, 1))
                     neg_inids.append(negative_inids)
                 neg_samples_np = np.hstack(
@@ -1232,7 +1256,7 @@ class MovieLens(Dataset):
 
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
-                    negative_inids = self.test_pos_unid_inid_map[u_nid] + self.neg_unid_inid_map[u_nid]
+                    negative_inids = self.test_pos_unid_inid_map.get(u_nid, []) + self.neg_unid_inid_map[u_nid]
                     negative_inids = rd.choices(negative_inids, k=self.num_negative_samples)
                     negative_inids = np.array(negative_inids, dtype=np.long).reshape(-1, 1)
                     neg_inids.append(negative_inids)
@@ -1347,7 +1371,7 @@ class MovieLens(Dataset):
                 u_nids = pos_samples_np[:, 0]
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
-                    negative_inids = self.test_pos_unid_inid_map[u_nid] + self.neg_unid_inid_map[u_nid]
+                    negative_inids = self.test_pos_unid_inid_map.get(u_nid, []) + self.neg_unid_inid_map[u_nid]
                     negative_inids = np.random.choice(negative_inids, size=(self.num_negative_samples, 1))
                     neg_inids.append(negative_inids)
                 neg_samples_np = np.hstack(
@@ -1373,7 +1397,7 @@ class MovieLens(Dataset):
                 u_nids = pos_edge_index_trans_np[:, 0]
                 p_bar = tqdm.tqdm(u_nids)
                 for u_nid in p_bar:
-                    negative_inids = self.test_pos_unid_inid_map[u_nid] + self.neg_unid_inid_map[u_nid]
+                    negative_inids = self.test_pos_unid_inid_map.get(u_nid, []) + self.neg_unid_inid_map[u_nid]
                     negative_inids = rd.choices(negative_inids, k=self.num_negative_samples)
                     negative_inids = np.array(negative_inids, dtype=np.long).reshape(-1, 1)
                     neg_inids.append(negative_inids)
