@@ -52,10 +52,24 @@ class GraphRecsysModel(torch.nn.Module):
         pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
         neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2])
 
+        # one hot encode y
+        # y *= 10
+        # y = y.long()
+        # y = torch.nn.functional.one_hot(y, num_classes=11)
+        # y = y.float()
+
+        # one hot encode negative samples as class 0
+        # y_neg = torch.zeros_like(y)
+        # y_neg[:, 0] = 1
+
+        # cross entropy loss
+        # cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([y, y_neg], dim=0))
+
+
         # mse loss
-        # pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
-        # neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
-        # cf_loss = pos_mse_loss + neg_mse_loss
+        pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
+        neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
+        cf_loss = pos_mse_loss + neg_mse_loss
 
         # bpr loss
         # cf_loss = -(pos_pred - neg_pred).sigmoid().log().sum()
@@ -66,7 +80,7 @@ class GraphRecsysModel(torch.nn.Module):
         # cf_loss = pos_mse_loss + neg_mse_loss
 
         # cross entropy loss
-        cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([torch.ones_like(pos_pred), torch.zeros_like(neg_pred)], dim=0))
+        # cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([torch.ones_like(pos_pred), torch.zeros_like(neg_pred)], dim=0))
 
         if self.entity_aware and self.training:
             pos_item_entity, neg_item_entity = pos_neg_pair_t[:,

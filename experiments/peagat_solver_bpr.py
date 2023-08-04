@@ -37,7 +37,7 @@ parser.add_argument('--entity_aware_coff', type=float, default=0.1, help='')
 # Train params
 parser.add_argument('--init_eval', type=str, default='true', help='')
 parser.add_argument('--num_negative_samples', type=int, default=4, help='')
-parser.add_argument('--num_neg_candidates', type=int, default=99, help='')
+parser.add_argument('--num_neg_candidates', type=int, default=1, help='')
 
 parser.add_argument('--device', type=str, default='cuda', help='')
 parser.add_argument('--gpu_idx', type=str, default='0', help='')

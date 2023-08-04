@@ -124,7 +124,7 @@ def drop_infrequent_concept_from_str(df, concept_name, num_occs):
 
 
 def generate_mlsmall_hete_graph(
-        movies, ratings, tagging, start, stop, init_time, single, future_testing
+        movies, ratings, tagging, start, stop, init_time, single, future_testing, testing_edges
 ):
     def get_concept_num_from_str(df, concept_name):
         concept_strs = [concept_str.split(',') for concept_str in df[concept_name]]
@@ -349,15 +349,19 @@ def generate_mlsmall_hete_graph(
                 continue
             last_rating_idx = len(uid_edge_values) - 1
             for i in range(last_rating_idx, -1, -1):
-                if uid_edge_values[i] >= 0 and uid_timestamps[i] >= start:
+                if uid_edge_values[i] >= 3.5: # and uid_timestamps[i] >= start:
                     edge_values[(unid, e2nid_dict['iid'][train_pos_uid_iids[i]])] = uid_edge_values[i] / 5
                     test_pos_uid_iids = [train_pos_uid_iids[i]]
+                    if uid not in testing_edges:
+                        testing_edges[uid] = []
+                    testing_edges[uid].append(train_pos_uid_iids[i])
                     test_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in test_pos_uid_iids]
                     train_pos_uid_iids.pop(i)
                     uid_edge_values = np.delete(uid_edge_values, i)
                     break
                     
-
+        # remove testing edges from training edges
+        train_pos_uid_iids = list(set(train_pos_uid_iids) - set(testing_edges.get(uid, [])))
         train_pos_uid_inids = [e2nid_dict['iid'][iid] for iid in train_pos_uid_iids]
         neg_uid_iids = list(set(unique_iids) - set(unfiltered_uid_iids))
         neg_uid_inids = [e2nid_dict['iid'][iid] for iid in neg_uid_iids]
@@ -651,6 +655,7 @@ def generate_ml25m_hete_graph(
 class MovieLens(Dataset):
     edge_hist = {}
     edge_last_use = {}
+    testing_edges = {}
     url = 'http://files.grouplens.org/datasets/movielens/'
 
     def __init__(self,
@@ -953,7 +958,8 @@ class MovieLens(Dataset):
             if self.type == 'hete':
                 dataset_property_dict = generate_mlsmall_hete_graph(
                     movies, ratings, tagging, self.start, self.stop, self.init_time,
-                    self.continual_aspect in ['online', 'single'], self.future_testing
+                    self.continual_aspect in ['online', 'single'], self.future_testing,
+                    self.testing_edges
                 )
                 
                 if self.continual_aspect != 'retrained':
@@ -964,9 +970,6 @@ class MovieLens(Dataset):
                 # remember the provenence of the ratings
                 for rating in ratings.itertuples():
                     self.edge_hist[(rating.uid, rating.iid + dataset_property_dict['num_uids'])] = self.timeframe
-      
-                self.len_ratings = len(ratings)
-                print(f'len(ratings): {len(ratings)}')
 
                 if len(ratings) == 0 or \
                     (self.continual_aspect == 'pretrained' and self.timeframe > 0):
@@ -1052,7 +1055,10 @@ class MovieLens(Dataset):
                     reverse=True,
                 ))
 
-                no_samples = min(len(pos_edge_index_trans_np), round(theta * self.len_ratings))
+                len_ratings = sum(self.edge_hist[(int(e0.item()), int(e1.item()))] == self.timeframe for e0, e1 in pos_edge_index_trans_np)
+
+                no_samples = min(len(pos_edge_index_trans_np), round(theta * len_ratings))
+                print(f'no_samples: {no_samples}')
 
                 # below there are the different heuristics I tried out
                 # edge_embs = torch.stack([edge_emb(e) for e in pos_edge_index_trans_np])
@@ -1255,14 +1261,20 @@ class MovieLens(Dataset):
                 u_nids = pos_edge_index_trans_np[:, 0]
 
                 p_bar = tqdm.tqdm(u_nids)
+                # TODO: repeat negative samples based on theta
                 for u_nid in p_bar:
                     negative_inids = self.test_pos_unid_inid_map.get(u_nid, []) + self.neg_unid_inid_map[u_nid]
                     negative_inids = rd.choices(negative_inids, k=self.num_negative_samples)
                     negative_inids = np.array(negative_inids, dtype=np.long).reshape(-1, 1)
+                    # repeat negative samples theta times
+                    # print('Dimension of negative_inids before: ', negative_inids.shape)
+                    negative_inids = np.repeat(negative_inids, repeats=theta, axis=0)
+                    # print('Dimension of negative_inids after: ', negative_inids.shape)
                     neg_inids.append(negative_inids)
                 neg_inid_np = np.vstack(neg_inids)
             else:
                 raise NotImplementedError
+            train_data_np = np.repeat(train_data_np, repeats=theta, axis=0)
             train_data_np = np.hstack([train_data_np, neg_inid_np])
 
             if self.entity_aware and not hasattr(self, 'iid_feat_nids'):
