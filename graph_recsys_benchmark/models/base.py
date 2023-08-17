@@ -49,8 +49,8 @@ class GraphRecsysModel(torch.nn.Module):
         if self.training:
             self.cached_repr = self.forward()
         pos_neg_pair_t, y = data
-        pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1])
-        neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2])
+        pos_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 1], one_hot=True)
+        neg_pred = self.predict(pos_neg_pair_t[:, 0], pos_neg_pair_t[:, 2], one_hot=True)
 
         # one hot encode y
         # y *= 10
@@ -67,9 +67,9 @@ class GraphRecsysModel(torch.nn.Module):
 
 
         # mse loss
-        pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
-        neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
-        cf_loss = pos_mse_loss + neg_mse_loss
+        # pos_mse_loss = ((pos_pred.sigmoid() - y) ** 2).mean()
+        # neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
+        # cf_loss = pos_mse_loss + neg_mse_loss
 
         # bpr loss
         # cf_loss = -(pos_pred - neg_pred).sigmoid().log().sum()
@@ -79,8 +79,25 @@ class GraphRecsysModel(torch.nn.Module):
         # neg_mse_loss = ((neg_pred.sigmoid() - 0) ** 2).mean()
         # cf_loss = pos_mse_loss + neg_mse_loss
 
+        def special_loss(y_pred, y_true):
+            # _, indices_true = torch.max(y_true, dim=1)
+            _, indices_pred = torch.max(y_pred, dim=1)
+            weights = torch.abs(y_true - indices_pred).float() / (y_pred.shape[1] - 1)
+            ce_loss = torch.nn.CrossEntropyLoss(reduction='none')(y_pred, y_true)
+            return (1.0 + weights) * ce_loss
+
         # cross entropy loss
+        # encode values >= 0.7 as class 1, < 0.7 as class 0
+        y = y.reshape(-1, 1)
+        y *= 10
+        y = y.long()
+        # y[y >= 0.7] = 1
+        # y[y < 0.7] = 1
+        # cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([y, torch.zeros_like(y)], dim=0))
+        # cf_loss = special_loss(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([y, torch.zeros_like(y)], dim=0)).mean()
         # cf_loss = torch.nn.BCEWithLogitsLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([torch.ones_like(pos_pred), torch.zeros_like(neg_pred)], dim=0))
+        # cf_loss = torch.nn.CrossEntropyLoss()(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([y, torch.zeros_like(y)], dim=0).reshape(-1))
+        cf_loss = special_loss(torch.cat([pos_pred, neg_pred], dim=0), torch.cat([y, torch.zeros_like(y)], dim=0).reshape(-1)).mean()
 
         if self.entity_aware and self.training:
             pos_item_entity, neg_item_entity = pos_neg_pair_t[:,
@@ -301,7 +318,7 @@ class PEABaseRecsysModel(GraphRecsysModel):
         else:
             self.fc1 = torch.nn.Linear(
                 2 * kwargs['repr_dim'], kwargs['repr_dim'])
-        self.fc2 = torch.nn.Linear(kwargs['repr_dim'], 1)
+        self.fc2 = torch.nn.Linear(kwargs['repr_dim'], 11)
 
     def reset_parameters(self):
         if not self.if_use_features:
@@ -333,10 +350,22 @@ class PEABaseRecsysModel(GraphRecsysModel):
             raise NotImplemented('Other aggr methods not implemeted!')
         return x
 
-    def predict(self, unids, inids):
+    def predict(self, unids, inids, one_hot=False):
         u_repr = self.cached_repr[unids]
         i_repr = self.cached_repr[inids]
         x = torch.cat([u_repr, i_repr], dim=-1)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
+        if one_hot:
+            return x
+        
+        # weighted mean
+        x = F.softmax(x, dim=-1)
+        x = x * torch.arange(0.0, 1.1, 0.1).to(x.device)
+        x = x.sum(dim=-1)
+
+        # argmax
+        # x = torch.argmax(x, dim=-1)
+        # x = x / 10.0
+        
         return x

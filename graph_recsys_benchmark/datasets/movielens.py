@@ -349,7 +349,7 @@ def generate_mlsmall_hete_graph(
                 continue
             last_rating_idx = len(uid_edge_values) - 1
             for i in range(last_rating_idx, -1, -1):
-                if uid_edge_values[i] >= 3.5: # and uid_timestamps[i] >= start:
+                if uid_edge_values[i] >= 0:# and uid_timestamps[i] >= start:
                     edge_values[(unid, e2nid_dict['iid'][train_pos_uid_iids[i]])] = uid_edge_values[i] / 5
                     test_pos_uid_iids = [train_pos_uid_iids[i]]
                     if uid not in testing_edges:

@@ -97,9 +97,6 @@ class BaseSolver(object):
             pos_pred = model.predict(pos_u_nids_t, pos_i_nids_t).reshape(-1)
             neg_pred = model.predict(neg_u_nids_t, neg_i_nids_t).reshape(-1)
 
-            # calculate accuracy
-            acc = torch.cat([pos_pred >= 0.5, neg_pred < 0.5]).float().mean().item()
-            accs = np.vstack([accs, acc])
 
 
             _, indices = torch.sort(
@@ -108,7 +105,15 @@ class BaseSolver(object):
             pos_pred = pos_pred.cpu().detach().numpy()
             neg_pred = neg_pred.cpu().detach().numpy()
 
-            # ground_truth = [dataset.edge_values[(u_nid, i_nid)] for i_nid in pos_i_nids]
+            # calculate accuracy
+            ground_truth = np.array([dataset.edge_values[(u_nid, i_nid)] >= 0.5 for i_nid in pos_i_nids])
+            ground_truth = np.concatenate([ground_truth, np.zeros(len(neg_i_nids))])
+            all_pred = np.concatenate([pos_pred, neg_pred])
+            acc = np.equal(ground_truth, (all_pred >= 0.5)).mean()
+            # acc = torch.cat([pos_pred >= 0.5, neg_pred < 0.5]).float().mean().item()
+            accs = np.vstack([accs, acc])
+
+            
             # apply sigmoid to predictions
             # sigmoid = lambda x: 1 / (1 + np.exp(-x))
             # pos_pred = sigmoid(pos_pred)
@@ -116,6 +121,7 @@ class BaseSolver(object):
             # r2 = r2_score(ground_truth, pos_pred)
             # compute accuracy
             # acc = (ground_truth == np.round(pos_pred, 1)).mean()
+            # accs = np.vstack([accs, acc])
 
             HRs = np.vstack([HRs, hit(hit_vec)])
             NDCGs = np.vstack([NDCGs, ndcg(hit_vec)])
