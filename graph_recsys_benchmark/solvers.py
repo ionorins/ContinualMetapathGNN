@@ -2,11 +2,9 @@ import os
 import random as rd
 from secrets import token_hex
 import numpy as np
-from sklearn.metrics import r2_score, accuracy_score
 import torch
 import time
 import pandas as pd
-from torch.utils import data
 import tqdm
 from torch.utils.data import DataLoader
 
@@ -141,6 +139,8 @@ class BaseSolver(object):
     def run(self):
         # save model weights under random name
         model_filename = token_hex(16)
+
+        self.dataset_args['token'] = model_filename
         
         # if end timeframe is not specified, set it to be the last one
         if self.dataset_args['end_timeframe'] is None:
@@ -156,7 +156,7 @@ class BaseSolver(object):
             shutil.rmtree('checkpoint/loggers', ignore_errors=True)
             shutil.rmtree('checkpoint/weights', ignore_errors=True)
             shutil.rmtree(
-                'checkpoint/data/Movielenslatest-small/processed', ignore_errors=True)
+                'checkpoint/data/Movielenslatest-small/processed' + model_filename, ignore_errors=True)
 
             global_logger_path = self.train_args['logger_folder']
             if not os.path.exists(global_logger_path):
@@ -202,7 +202,7 @@ class BaseSolver(object):
                             if self.train_args['train_between_emb_diff']:
                                 crt_emb = model.forward()
                         else:
-                            model = torch.load(model_filename + '.pth')
+                            model = torch.load('pths/' + model_filename + '.pth')
 
                             if self.train_args['train_between_emb_diff']:
                                 last_emb = crt_emb
@@ -428,7 +428,7 @@ class BaseSolver(object):
                                 )
                                 instantwrite(logger_file)
                                 clearcache()
-                            f = open(f'HRs/{dataset.num_timeframes}{dataset.continual_aspect}{self.train_args["out_filename"]}.csv', 'a')
+                            f = open(f'HRs/{self.train_args["out_filename"]}.csv', 'a')
                             f.write(f'{i},{str(accs[0])},{str(HRs[5])},{str(NDCGs[5])}\n')
                             f.close()
 
@@ -439,7 +439,7 @@ class BaseSolver(object):
                         # save ewc parameters and model
                         # model.register_ewc_params(dataset.train_data)
                         # print('REGISTERED EWC PARAMS')
-                        torch.save(model, model_filename + '.pth')
+                        torch.save(model, 'pths/' + model_filename + '.pth')
 
                         HRs_per_run_np = np.vstack(
                             [HRs_per_run_np, np.max(HRs_per_epoch_np, axis=0)])

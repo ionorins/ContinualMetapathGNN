@@ -100,7 +100,7 @@ class Dataset(torch.utils.data.Dataset):
 
     @property
     def processed_dir(self):
-        return osp.join(self.root, 'processed')
+        return osp.join(self.root, 'processed' + self.token)
 
     @property
     def raw_paths(self):

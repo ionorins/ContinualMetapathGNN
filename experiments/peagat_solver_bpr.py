@@ -30,12 +30,12 @@ parser.add_argument('--emb_dim', type=int, default=64, help='')
 parser.add_argument('--num_heads', type=int, default=1, help='')
 parser.add_argument('--repr_dim', type=int, default=16, help='')
 parser.add_argument('--hidden_size', type=int, default=64, help='')
-parser.add_argument('--meta_path_steps', type=str, default='2,2,2,2,2,2,2,2,2', help='')	#2,2,2,2,2,2,2,2,2(for small) #2,2,2,2,2,2,2,2,2,2,2,2,2(for 25m) #2,2,2,2,2,2,2,2,2,2,2 (for yelp)
+parser.add_argument('--meta_path_steps', type=str, default='2,2,2,2,2,2,2', help='')	#2,2,2,2,2,2,2,2,2(for small) #2,2,2,2,2,2,2,2,2,2,2,2,2(for 25m) #2,2,2,2,2,2,2,2,2,2,2 (for yelp)
 parser.add_argument('--channel_aggr', type=str, default='att', help='')
 parser.add_argument('--entity_aware_coff', type=float, default=0.1, help='')
 
 # Train params
-parser.add_argument('--init_eval', type=str, default='true', help='')
+parser.add_argument('--init_eval', type=str, default='false', help='')
 parser.add_argument('--num_negative_samples', type=int, default=4, help='')
 parser.add_argument('--num_neg_candidates', type=int, default=1, help='')
 
@@ -49,8 +49,8 @@ parser.add_argument('--opt', type=str, default='adam', help='')
 parser.add_argument('--lr', type=float, default=0.001, help='')
 parser.add_argument('--weight_decay', type=float, default=0.001, help='')
 parser.add_argument('--early_stopping', type=int, default=20, help='')
-parser.add_argument('--save_epochs', type=str, default='5,10,15,20,25', help='')
-parser.add_argument('--save_every_epoch', type=int, default=26, help='')        #26(for MovieLens), 16(only for Yelp)
+parser.add_argument('--save_epochs', type=str, default='10000,20000', help='')
+parser.add_argument('--save_every_epoch', type=int, default=10000, help='')        #26(for MovieLens), 16(only for Yelp)
 parser.add_argument('--metapath_test', type=str, default='false', help='')
 parser.add_argument('--continual_aspect', type=str, default='continual', help='')
 parser.add_argument('--equal_timespan_timeframes', type=str, default='false', help='')
@@ -58,9 +58,10 @@ parser.add_argument('--num_timeframes', type=int, default=25, help='')
 parser.add_argument('--end_timeframe', type=int, help='')
 parser.add_argument('--start_timeframe', type=int, default=0, help='')
 parser.add_argument('--ewc_type', type=str, default='ewc', help='')
-parser.add_argument('--ewc_lambda', type=float, default=80, help='')
+parser.add_argument('--ewc_lambda', type=float, default=0, help='')
 parser.add_argument('--theta', type=float, default=1.5, help='')
-parser.add_argument('--future_testing', type=str, default='true', help='')
+parser.add_argument('--future_testing', type=str, default='false', help='')
+parser.add_argument('--last_task_accuracy', type=str, default='false', help='')
 parser.add_argument('--train_between_emb_diff', type=str, default='false', help='')
 parser.add_argument('--out_filename', type=str, default='', help='')
 
@@ -88,6 +89,7 @@ dataset_args = {
     'end_timeframe': args.end_timeframe, 'start_timeframe': args.start_timeframe,
     'continual_aspect': args.continual_aspect,
     'future_testing': args.future_testing.lower() == 'true',
+    'last_task_accuracy': args.last_task_accuracy.lower() == 'true',
 }
 model_args = {
     'model_type': MODEL_TYPE,
